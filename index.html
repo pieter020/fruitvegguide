@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Root to Tip</title>
+<meta name="description" content="Van wortel tot top: welke delen van groente en fruit je kunt eten, en hoe. / Root to tip: which parts of fruit and veg you can eat, and how.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a201b" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Root to tip">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root {
+  /* Layout: list of products left, the chosen product's parts right (stacked on phones). Greengrocer ledger feel. */
+  --bg: #f2f4ec;
+  --surface: #ffffff;
+  --ink: #1b241d;
+  --muted: #5a665c;
+  --line: #d8ddd0;
+  --accent: #9b1d58;
+  --accent-soft: #f6e4ec;
+  --eat: #2c7a39;   --eat-bg: #e3f1e3;
+  --cook: #9a6a12;  --cook-bg: #f6ecd6;
+  --flavour: #2f639e; --flavour-bg: #e2ebf6;
+  --limit: #b8501b; --limit-bg: #f8e5d9;
+  --no: #8a2a2a;    --no-bg: #f3dfdf;
+  --warn-bg: #fff6e6; --warn-line: #e7c98a;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --r: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111612; --surface: #1a201b; --ink: #e5eae2; --muted: #9ba69c; --line: #2d362f;
+    --accent: #e46a9f; --accent-soft: #3a1f2c;
+    --eat: #7fcf88; --eat-bg: #1f3323; --cook: #e2b25a; --cook-bg: #3a2f17;
+    --flavour: #8cb6ea; --flavour-bg: #1d2a3b; --limit: #f09663; --limit-bg: #3d2519;
+    --no: #ee8f8f; --no-bg: #3b1d1d; --warn-bg: #2e2716; --warn-line: #6d5a2c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111612; --surface: #1a201b; --ink: #e5eae2; --muted: #9ba69c; --line: #2d362f;
+  --accent: #e46a9f; --accent-soft: #3a1f2c;
+  --eat: #7fcf88; --eat-bg: #1f3323; --cook: #e2b25a; --cook-bg: #3a2f17;
+  --flavour: #8cb6ea; --flavour-bg: #1d2a3b; --limit: #f09663; --limit-bg: #3d2519;
+  --no: #ee8f8f; --no-bg: #3b1d1d; --warn-bg: #2e2716; --warn-line: #6d5a2c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+button, input { font: inherit; color: inherit; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+
+.app { display: grid; grid-template-rows: auto auto 1fr; height: 100%; }
+header.top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 10px calc(16px + env(safe-area-inset-left)); border-bottom: 1px solid var(--line); background: var(--surface); }
+.brand { display: flex; flex-direction: column; margin-right: auto; }
+.brand h1 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.01em; }
+.brand h1 span { color: var(--accent); }
+.brand p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 5px 12px; cursor: pointer; font-weight: 700; font-size: 0.85rem; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; }
+.switch input { appearance: none; width: 40px; height: 22px; border-radius: 999px; background: var(--line); position: relative; cursor: pointer; transition: background .15s; margin: 0; }
+.switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); transition: transform .15s; }
+.switch input:checked { background: var(--eat); }
+.switch input:checked::after { transform: translateX(18px); }
+
+nav.tabs { display: flex; gap: 4px; padding: 0 16px; background: var(--surface); border-bottom: 1px solid var(--line); overflow-x: auto; }
+nav.tabs a { text-decoration: none; color: var(--muted); padding: 10px 12px; border-bottom: 3px solid transparent; font-weight: 700; white-space: nowrap; }
+nav.tabs a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
+
+main { min-height: 0; overflow: hidden; }
+.view { height: 100%; overflow: auto; }
+.view[hidden] { display: none; }
+
+/* Products view */
+.split { display: grid; grid-template-columns: minmax(300px, 400px) 1fr; height: 100%; }
+.listpane { border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+.filters { padding: 14px 16px 10px; display: grid; gap: 10px; border-bottom: 1px solid var(--line); }
+.search { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 3px 10px; font-size: 0.85rem; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chiplabel { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+.count { font-size: 0.85rem; color: var(--muted); padding: 8px 16px 0; }
+ul.plist { list-style: none; margin: 0; padding: 6px 8px calc(24px + env(safe-area-inset-bottom)); overflow: auto; flex: 1; }
+ul.plist li button { width: 100%; text-align: left; border: 0; background: transparent; border-radius: var(--r); padding: 9px 10px; cursor: pointer; display: grid; gap: 4px; }
+ul.plist li button:hover { background: var(--accent-soft); }
+ul.plist li button[aria-current="true"] { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.pname { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.pname strong { font-size: 1.02rem; }
+.pname small { color: var(--muted); }
+.flags { margin-left: auto; display: inline-flex; gap: 4px; }
+.flag { font-size: 0.7rem; font-weight: 700; border-radius: 4px; padding: 0 5px; line-height: 1.6; }
+.flag.fibre { background: var(--eat-bg); color: var(--eat); }
+.flag.warn { background: var(--warn-bg); color: var(--limit); border: 1px solid var(--warn-line); }
+.minis { display: flex; gap: 4px; flex-wrap: wrap; }
+.mini { font-size: 0.75rem; border-radius: 4px; padding: 0 6px; line-height: 1.6; }
+
+.s-eat { background: var(--eat-bg); color: var(--eat); }
+.s-cook { background: var(--cook-bg); color: var(--cook); }
+.s-flavour { background: var(--flavour-bg); color: var(--flavour); }
+.s-limit { background: var(--limit-bg); color: var(--limit); }
+.s-no { background: var(--no-bg); color: var(--no); }
+
+.detail { overflow: auto; padding: 22px 28px 48px; }
+.detail .inner { max-width: 760px; display: grid; gap: 18px; }
+.backbtn { display: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; cursor: pointer; justify-self: start; }
+.dhead h2 { font-size: 2rem; font-weight: 700; }
+.dhead p { margin: 4px 0 0; color: var(--muted); }
+.fibrebox { border-left: 4px solid var(--eat); background: var(--eat-bg); padding: 10px 14px; border-radius: 0 var(--r) var(--r) 0; }
+.fibrebox.neg { border-left-color: var(--muted); background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--muted); }
+.fibrebox b { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.parts { display: grid; gap: 12px; }
+.part { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 10px; }
+.part-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.part-h h3 { font-size: 1.15rem; }
+.pill { font-size: 0.8rem; font-weight: 700; border-radius: 999px; padding: 2px 10px; }
+.part p { margin: 0; max-width: 65ch; }
+.srcs { display: flex; gap: 6px; flex-wrap: wrap; }
+.src { font-size: 0.75rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; color: var(--muted); text-decoration: none; }
+.src i { font-style: normal; font-weight: 700; }
+.src.measured i { color: var(--eat); }
+.src.authority i { color: var(--flavour); }
+.src.chef i { color: var(--accent); }
+.warnbox { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: var(--r); padding: 10px 12px; display: grid; gap: 6px; font-size: 0.95rem; }
+.warnbox > b { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--limit); }
+.warnbox p { margin: 0; }
+.verify { display: inline-block; font-size: 0.72rem; font-weight: 700; color: var(--muted); border: 1px dashed var(--muted); border-radius: 4px; padding: 0 5px; margin-left: 4px; }
+details.folded { background: var(--eat-bg); border-radius: var(--r); padding: 8px 12px; font-size: 0.9rem; }
+details.folded summary { cursor: pointer; color: var(--eat); font-weight: 700; }
+details.folded p { margin: 6px 0 0; }
+.techlinks { display: flex; gap: 6px; flex-wrap: wrap; }
+.techlinks a { border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 3px 12px; text-decoration: none; font-size: 0.9rem; font-weight: 700; }
+.sect-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+.orgnote { font-size: 0.85rem; color: var(--muted); }
+
+/* Techniques + About */
+.page { padding: 22px 16px calc(60px + env(safe-area-inset-bottom)); }
+.page .inner { max-width: 860px; margin: 0 auto; display: grid; gap: 16px; }
+.page h2 { font-size: 1.6rem; }
+.tcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; display: grid; gap: 8px; scroll-margin-top: 12px; }
+.tcard:target { box-shadow: 0 0 0 2px var(--accent); }
+.tcard h3 { font-size: 1.2rem; }
+.tcard ol { margin: 0; padding-left: 1.3em; display: grid; gap: 4px; max-width: 65ch; }
+.used { font-size: 0.9rem; color: var(--muted); }
+.used a { color: var(--ink); }
+.prose p, .prose li { max-width: 68ch; }
+.prose h3 { font-size: 1.15rem; margin-top: 8px; }
+.legend { display: grid; gap: 8px; }
+.legend div { display: flex; gap: 10px; align-items: baseline; }
+.legend .pill { min-width: 9.5em; text-align: center; }
+table.src-t { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+table.src-t td, table.src-t th { border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: left; vertical-align: top; }
+.tablewrap { overflow-x: auto; }
+
+@media (max-width: 860px) {
+  .split { grid-template-columns: 1fr; }
+  .listpane { border-right: 0; }
+  .split { display: block; }
+  .listpane { height: 100%; }
+  .detail { display: none; height: 100%; padding: 14px 16px 48px; }
+  .split.showdetail .listpane { display: none; }
+  .split.showdetail .detail { display: block; }
+  .backbtn { display: inline-block; }
+  .dhead h2 { font-size: 1.7rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><h1 id="title"></h1><p id="tagline"></p></div>
+    <div class="controls">
+      <label class="switch" for="organic"><input type="checkbox" id="organic"><span id="organicLabel"></span></label>
+      <div class="seg" role="group" aria-label="Language / Taal">
+        <button type="button" id="lang-nl" data-lang="nl">NL</button>
+        <button type="button" id="lang-en" data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+  <nav class="tabs" id="tabs"></nav>
+  <main>
+    <section class="view" id="v-products">
+      <div class="split">
+        <div class="listpane">
+          <div class="filters">
+            <input class="search" id="q" type="search" autocomplete="off">
+            <div class="chips" id="cats"></div>
+            <div><div class="chiplabel" id="partsLabel"></div><div class="chips" id="fams"></div></div>
+          </div>
+          <div class="count" id="count"></div>
+          <ul class="plist" id="plist"></ul>
+        </div>
+        <div class="detail" id="detail"></div>
+      </div>
+    </section>
+    <section class="view page" id="v-techniques" hidden></section>
+    <section class="view page" id="v-about" hidden></section>
+  </main>
+</div>
+<script>
+// Shared data: part labels, statuses, sources, warnings, techniques, UI strings.
+// Every user-facing string exists in both "en" and "nl".
+
+const STATUS = {
+  eat:     { en: "Eat",                nl: "Eten",                  den: "Fine raw or cooked.",                         dnl: "Rauw of gekookt prima." },
+  cook:    { en: "Cook first",         nl: "Eerst koken",           den: "Edible, but cook it (texture or safety).",    dnl: "Eetbaar, maar eerst garen (structuur of veiligheid)." },
+  flavour: { en: "Flavour, then out",  nl: "Smaak, daarna eruit",   den: "Use for flavour, then strain or remove.",     dnl: "Gebruik voor smaak, daarna zeven of eruit halen." },
+  limit:   { en: "With care",          nl: "Met mate",              den: "Small amounts, or read the warning first.",   dnl: "Kleine hoeveelheden, of lees eerst de waarschuwing." },
+  no:      { en: "Don't eat",          nl: "Niet eten",             den: "Compost it.",                                 dnl: "Naar de gft-bak." }
+};
+
+// Part types → label + family (family drives the part filter).
+const PART = {
+  skin:    { en: "Skin",             nl: "Schil",              f: "skin" },
+  peel:    { en: "Peel & zest",      nl: "Schil & rasp",       f: "skin" },
+  pith:    { en: "White pith",       nl: "Wit vlies",          f: "skin" },
+  rind:    { en: "Rind",             nl: "Korst",              f: "skin" },
+  papery:  { en: "Papery skins",     nl: "Droge velletjes",    f: "skin" },
+  outer:   { en: "Outer layers",     nl: "Buitenste lagen",    f: "leaves" },
+  outerl:  { en: "Outer leaves",     nl: "Buitenste bladeren", f: "leaves" },
+  leaves:  { en: "Leaves",           nl: "Blad",               f: "leaves" },
+  tops:    { en: "Green tops",       nl: "Loof",               f: "leaves" },
+  fronds:  { en: "Fronds",           nl: "Venkelgroen",        f: "leaves" },
+  stalk:   { en: "Stalk",            nl: "Steel",              f: "stalks" },
+  stems:   { en: "Stems",            nl: "Stelen",             f: "stalks" },
+  core:    { en: "Core",             nl: "Kern",               f: "stalks" },
+  butts:   { en: "Woody ends",       nl: "Houtige uiteinden",  f: "stalks" },
+  base:    { en: "Base",             nl: "Voet",               f: "stalks" },
+  cob:     { en: "Cob",              nl: "Kolf",               f: "stalks" },
+  seeds:   { en: "Seeds",            nl: "Zaden",              f: "seeds" },
+  pips:    { en: "Pips",             nl: "Pitjes",             f: "seeds" },
+  stone:   { en: "Stone",            nl: "Pit",                f: "seeds" },
+  kernel:  { en: "Kernel inside the stone", nl: "Zaadje in de pit", f: "seeds" },
+  root:    { en: "Roots",            nl: "Worteltjes",         f: "other" },
+  pod:     { en: "Pods",             nl: "Peulen",             f: "other" },
+  beanskin:{ en: "Bean skins",       nl: "Velletjes van de bonen", f: "skin" },
+  flowers: { en: "Flowers",          nl: "Bloemen",            f: "other" },
+  calyx:   { en: "Green top",        nl: "Kroontje",           f: "other" },
+  crown:   { en: "Crown",            nl: "Kroon",              f: "other" },
+  choke:   { en: "Choke",            nl: "Hooi",               f: "other" },
+  green:   { en: "Green patches & sprouts", nl: "Groene plekken & kiemen", f: "skin" },
+  shoot:   { en: "Green shoot",      nl: "Groene kiem",        f: "other" },
+  silk:    { en: "Silk",             nl: "Maïsbaard",          f: "other" },
+  husk:    { en: "Husks",            nl: "Schutbladeren",      f: "leaves" },
+  vine:    { en: "Vine & leaves",    nl: "Trosje & blad",      f: "stalks" },
+  trim:    { en: "Trimmings",        nl: "Snijresten",         f: "other" },
+  halves:  { en: "Squeezed halves",  nl: "Uitgeperste helften", f: "skin" },
+  whole:   { en: "Bruised or soft fruit", nl: "Zacht of geplet fruit", f: "other" }
+};
+
+const FAMILY = {
+  skin:   { en: "Skins & peel",   nl: "Schillen" },
+  leaves: { en: "Leaves & tops",  nl: "Blad & loof" },
+  stalks: { en: "Stalks & cores", nl: "Stelen & kernen" },
+  seeds:  { en: "Seeds & stones", nl: "Zaden & pitten" },
+  other:  { en: "Other parts",    nl: "Overige delen" }
+};
+
+const CATS = {
+  veg:   { en: "Vegetables", nl: "Groente" },
+  fruit: { en: "Fruit",      nl: "Fruit" },
+  herb:  { en: "Herbs",      nl: "Kruiden" },
+  mush:  { en: "Mushrooms",  nl: "Paddenstoelen" }
+};
+
+// Evidence classes: measured > authority > named practitioner > general kitchen practice.
+const SOURCES = {
+  kcl:      { cls: "measured",  en: "King's College London (2026)", nl: "King's College London (2026)",
+              full: "Browne, Gibson et al., International Journal of Food Sciences and Nutrition, Oct 2026. Fibre measured in raw produce, 12 items.",
+              fullnl: "Browne, Gibson e.a., International Journal of Food Sciences and Nutrition, okt 2026. Vezels gemeten in rauwe producten, 12 soorten.",
+              url: "https://www.sciencefocus.com/news/youre-likely-throwing-away-the-healthiest-part-of-fruit-warn-experts" },
+  efsa:     { cls: "authority", en: "EFSA", nl: "EFSA",
+              full: "European Food Safety Authority, scientific opinions (glycoalkaloids 2020; apricot kernels 2016).",
+              fullnl: "Europese Autoriteit voor voedselveiligheid, wetenschappelijke adviezen (glycoalkaloïden 2020; abrikozenpitten 2016).",
+              url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7417869/" },
+  vc:       { cls: "authority", en: "Voedingscentrum", nl: "Voedingscentrum",
+              full: "Netherlands Nutrition Centre, as quoted in Dutch media (NRC, NU.nl via Radar; Welingelichte Kringen).",
+              fullnl: "Voedingscentrum, zoals geciteerd in Nederlandse media (NRC, NU.nl via Radar; Welingelichte Kringen).",
+              url: "https://radar.avrotros.nl/artikel/een-vrucht-met-schil-en-pit-opeten-wij-vertellen-je-of-het-kan-52824" },
+  rivm:     { cls: "authority", en: "RIVM", nl: "RIVM",
+              full: "National Institute for Public Health and the Environment, risk note on imazalil on oranges.",
+              fullnl: "Rijksinstituut voor Volksgezondheid en Milieu, risicobeoordeling imazalil op sinaasappels.",
+              url: "https://www.rivm.nl/voedsel-en-voeding/veilig-voedsel/chemische-stoffen-in-voedsel/risicobeoordelingen-chemische-voedselveiligheid/risicos-imazalil-op-sinaasappels" },
+  bnf:      { cls: "authority", en: "British Nutrition Foundation", nl: "British Nutrition Foundation",
+              full: "Sammie Gill, senior nutrition scientist, quoted in The Guardian, 17 Nov 2026.",
+              fullnl: "Sammie Gill, voedingswetenschapper, geciteerd in The Guardian, 17 nov 2026.",
+              url: "https://www.theguardian.com/lifeandstyle/2026/nov/17/root-to-tip-revolution-a-to-z-eat-plants-full-flavour-fibre-savings" },
+  gdn:      { cls: "chef", en: "The Guardian A–Z", nl: "The Guardian A–Z",
+              full: "Rachel Dixon, 'The root-to-tip revolution', The Guardian, 17 Nov 2026 (advice from chefs and nutritionists).",
+              fullnl: "Rachel Dixon, 'The root-to-tip revolution', The Guardian, 17 nov 2026 (advies van koks en voedingskundigen).",
+              url: "https://www.theguardian.com/lifeandstyle/2026/nov/17/root-to-tip-revolution-a-to-z-eat-plants-full-flavour-fibre-savings" },
+  hunt:     { cls: "chef", en: "Tom Hunt", nl: "Tom Hunt",
+              full: "Chef, Guardian 'Waste not' columnist; quoted in the Guardian A–Z.", fullnl: "Kok, columnist 'Waste not' in The Guardian; geciteerd in het Guardian-artikel.",
+              url: "https://www.theguardian.com/lifeandstyle/2026/nov/17/root-to-tip-revolution-a-to-z-eat-plants-full-flavour-fibre-savings" },
+  handling: { cls: "chef", en: "Adam Handling", nl: "Adam Handling",
+              full: "Chef of zero-waste restaurants, author of Why Waste?; quoted in the Guardian A–Z.", fullnl: "Kok van zero-waste-restaurants, auteur van Why Waste?; geciteerd in het Guardian-artikel.",
+              url: "https://www.theguardian.com/lifeandstyle/2026/nov/17/root-to-tip-revolution-a-to-z-eat-plants-full-flavour-fibre-savings" },
+  heywood:  { cls: "chef", en: "Tom Heywood", nl: "Tom Heywood",
+              full: "Chef-owner, Pignut & the Hare; quoted in the Guardian A–Z.", fullnl: "Kok-eigenaar van Pignut & the Hare; geciteerd in het Guardian-artikel.",
+              url: "https://www.theguardian.com/lifeandstyle/2026/nov/17/root-to-tip-revolution-a-to-z-eat-plants-full-flavour-fibre-savings" },
+  bonneau:  { cls: "chef", en: "Anne-Marie Bonneau", nl: "Anne-Marie Bonneau",
+              full: "The Zero-Waste Chef; quoted in the Guardian A–Z.", fullnl: "The Zero-Waste Chef; geciteerd in het Guardian-artikel.",
+              url: "https://www.theguardian.com/lifeandstyle/2026/nov/17/root-to-tip-revolution-a-to-z-eat-plants-full-flavour-fibre-savings" },
+  nelson:   { cls: "chef", en: "Alexis Nikole Nelson", nl: "Alexis Nikole Nelson",
+              full: "Forager, author of Happy Snacking, Don't Die!; cited in the Guardian A–Z.", fullnl: "Forager, auteur van Happy Snacking, Don't Die!; aangehaald in het Guardian-artikel.",
+              url: "https://www.theguardian.com/lifeandstyle/2026/nov/17/root-to-tip-revolution-a-to-z-eat-plants-full-flavour-fibre-savings" },
+  oddbox:   { cls: "chef", en: "Oddbox", nl: "Oddbox",
+              full: "UK fruit and veg box company, recipes cited in the Guardian A–Z. Commercial interest: sells produce.", fullnl: "Brits groente- en fruitboxbedrijf, recepten aangehaald in het Guardian-artikel. Commercieel belang: verkoopt groente en fruit.",
+              url: "https://www.theguardian.com/lifeandstyle/2026/nov/17/root-to-tip-revolution-a-to-z-eat-plants-full-flavour-fibre-savings" },
+  kitchen:  { cls: "kitchen", en: "General kitchen practice", nl: "Gangbare keukenpraktijk",
+              full: "Common cooking practice compiled by Claude for this tool. Not tied to one named source; treat as a starting point.",
+              fullnl: "Gangbare kookpraktijk, door Claude verzameld voor deze tool. Niet gekoppeld aan één bron; zie het als vertrekpunt.",
+              url: null }
+};
+
+const SRC_CLASS = {
+  measured:  { en: "Measured",         nl: "Gemeten" },
+  authority: { en: "Official guidance", nl: "Officieel advies" },
+  chef:      { en: "Chef practice",     nl: "Koks-praktijk" },
+  kitchen:   { en: "Kitchen practice",  nl: "Keukenpraktijk" }
+};
+
+// Warnings. organic:true → concern is about pesticide/post-harvest treatment and largely falls away for organic produce.
+// verify:true → not yet checked against the primary source; see About.
+const WARN = {
+  pest: { organic: true, verify: true, src: ["vc"],
+    en: "Voedingscentrum: for pineapple, avocado, banana, kiwi, mango, melon, pumpkin and watermelon, the pesticide safety assessment assumes you don't eat the peel. Eating it means more residue; now and then is no problem, as a habit they advise against it.",
+    nl: "Voedingscentrum: bij ananas, avocado, banaan, kiwi, mango, meloen, pompoen en watermeloen gaat de veiligheidsbeoordeling van bestrijdingsmiddelen ervan uit dat je de schil niet eet. Eet je die wel, dan krijg je meer resten binnen; af en toe kan dat, als gewoonte raden ze het af." },
+  citrus: { organic: true, verify: false, src: ["rivm"],
+    en: "RIVM: conventional citrus is routinely treated after harvest with an anti-fungal agent such as imazalil, often with a wax coat. Use organic or untreated ('onbehandeld') fruit for zest, peel and tea.",
+    nl: "RIVM: gangbaar citrusfruit wordt na de oogst standaard behandeld met een schimmelwerend middel zoals imazalil, vaak met een waslaag. Gebruik biologisch of onbehandeld fruit voor rasp, schil en thee." },
+  glyco: { organic: false, verify: false, src: ["efsa"],
+    en: "EFSA (2020): potatoes' natural toxins (glycoalkaloids) sit mostly in and just under the skin. Peeling removes 25–75%, boiling and frying lower them further. EFSA sees a health concern for infants and toddlers, and for adults who eat a lot of potatoes.",
+    nl: "EFSA (2020): de natuurlijke gifstoffen van aardappel (glycoalkaloïden) zitten vooral in en vlak onder de schil. Schillen haalt er 25–75% van weg, koken en frituren nog meer. EFSA ziet een gezondheidsrisico voor baby's en peuters, en voor volwassenen die veel aardappelen eten." },
+  green: { organic: false, verify: false, src: ["efsa"],
+    en: "EFSA data: sprouts can hold 2,000–7,300 mg glycoalkaloids per kg, against 12–100 in the flesh. Green patches mean the same compounds are rising. Store potatoes cool and dark.",
+    nl: "EFSA-cijfers: kiemen kunnen 2.000–7.300 mg glycoalkaloïden per kg bevatten, tegen 12–100 in het vruchtvlees. Groene plekken wijzen op dezelfde stoffen. Bewaar aardappelen koel en donker." },
+  nightleaf: { organic: false, verify: true, src: ["kitchen"],
+    en: "Tomato leaves and stems contain tomatine, a glycoalkaloid. Experts disagree on how risky small amounts are; brief infusing is chef practice, eating the leaves is not advised.",
+    nl: "Tomatenblad en -stelen bevatten tomatine, een glycoalkaloïde. Deskundigen verschillen van mening over kleine hoeveelheden; kort laten trekken is koks-praktijk, het blad opeten wordt afgeraden." },
+  rhubarb: { organic: false, verify: false, src: ["bnf"],
+    en: "British Nutrition Foundation: large amounts of rhubarb leaves can cause cramps, nausea and vomiting because of their high oxalic acid content. Eat the stalks only.",
+    nl: "British Nutrition Foundation: veel rabarberblad kan buikkrampen, misselijkheid en braken geven door het hoge gehalte oxaalzuur. Eet alleen de stelen." },
+  oxalate: { organic: false, verify: true, src: ["bnf"],
+    en: "High in oxalate. The BNF notes high oxalate levels can be a problem for people prone to kidney stones (applied here to this leaf by Claude).",
+    nl: "Rijk aan oxalaat. Volgens de BNF kan veel oxalaat een probleem zijn voor mensen die aanleg hebben voor nierstenen (hier door Claude op dit blad toegepast)." },
+  kernel: { organic: false, verify: false, src: ["efsa"],
+    en: "EFSA: the kernel inside apricot stones contains amygdalin, which turns into cyanide. More than three small raw kernels, or half a large one, can exceed the safe level for an adult; for a toddler one small kernel can. Peach, plum and cherry kernels contain the same kind of compound. Never crack stones to eat or grind the kernel.",
+    nl: "EFSA: het zaadje in een abrikozenpit bevat amygdaline, dat in het lichaam blauwzuur wordt. Meer dan drie kleine rauwe pitjes, of een halve grote, kan voor een volwassene boven de veilige grens komen; voor een peuter al één klein pitje. Perzik-, pruimen- en kersenpitten bevatten hetzelfde soort stof. Kraak pitten nooit om het zaadje te eten of te malen." },
+  pips: { organic: false, verify: false, src: ["vc"],
+    en: "Voedingscentrum: apple and pear pips contain a little of a compound the body turns into cyanide. Only a risk if you chew through many; a few swallowed whole do no harm.",
+    nl: "Voedingscentrum: appel- en perenpitjes bevatten een beetje van een stof die het lichaam omzet in blauwzuur. Alleen een risico als je er veel kapotkauwt; een paar heel doorslikken kan geen kwaad." },
+  urushiol: { organic: false, verify: true, src: ["kitchen"],
+    en: "Mango skin contains urushiol, the compound in poison ivy. People who react to it (or to cashew shells) can get an itchy rash around the mouth.",
+    nl: "Mangoschil bevat urushiol, de stof uit gifsumak. Mensen die daarop reageren (of op cashewschillen) kunnen jeukende uitslag rond de mond krijgen." },
+  toxinpeel: { organic: false, verify: false, src: ["vc"],
+    en: "Voedingscentrum: the peels of pineapple, avocado and passion fruit contain natural plant toxins. A little by accident is no cause for concern; harm needs larger amounts.",
+    nl: "Voedingscentrum: de schillen van ananas, avocado en passievrucht bevatten natuurlijke plantengifstoffen. Een beetje per ongeluk is geen reden tot zorg; schade vraagt grotere hoeveelheden." },
+  avopit: { organic: false, verify: false, src: ["kitchen"],
+    en: "I found no food-safety assessment of eating avocado stones. Some recipes use them; whether that's safe is simply unknown.",
+    nl: "Ik vond geen voedselveiligheidsbeoordeling van het eten van avocadopitten. Sommige recepten gebruiken ze; of dat veilig is, is gewoon onbekend." },
+  rawbeans: { organic: false, verify: true, src: ["vc"],
+    en: "Raw green beans contain lectins (phasin) that can upset the stomach. Cook them through; don't eat them raw.",
+    nl: "Rauwe sperziebonen bevatten lectines (fasine) die maagklachten kunnen geven. Altijd gaar koken, niet rauw eten." },
+  favism: { organic: false, verify: true, src: ["kitchen"],
+    en: "People with G6PD deficiency (favism) must avoid broad beans entirely, cooked or raw.",
+    nl: "Mensen met G6PD-deficiëntie (favisme) moeten tuinbonen helemaal vermijden, rauw én gekookt." },
+  lychee: { organic: false, verify: true, src: ["kitchen"],
+    en: "Lychee seeds contain compounds that can lower blood sugar. Don't eat them.",
+    nl: "Lycheepitten bevatten stoffen die de bloedsuiker kunnen verlagen. Niet eten." },
+  figsap: { organic: false, verify: true, src: ["kitchen"],
+    en: "Fig leaf sap can make skin burn in sunlight. Wear gloves when handling fresh leaves; infuse, don't eat them.",
+    nl: "Sap van vijgenblad kan de huid in zonlicht laten verbranden. Draag handschoenen bij verse bladeren; laten trekken, niet opeten." },
+  oil: { organic: false, verify: true, src: ["kitchen"],
+    en: "Oil infused with fresh garlic, herbs or alliums can let botulism bacteria grow. Keep it in the fridge and use within a week, or make small batches.",
+    nl: "Olie met verse knoflook, kruiden of uiachtigen kan botulismebacteriën laten groeien. Bewaar in de koelkast en gebruik binnen een week, of maak kleine porties." }
+};
+
+// Techniques library. steps: arrays of short sentences.
+const TECH = {
+  stock: { src: ["hunt", "handling", "kitchen"],
+    en: { t: "Scrap stock", s: ["Keep a bag in the freezer for onion skins, carrot ends, leek tops, celery bases, herb stems and mushroom trimmings.", "When it's full, cover with water, simmer 45–60 minutes and strain.", "Go easy on cabbage, broccoli and cauliflower (they turn stock sulphurous) and on beetroot (it turns everything pink)."] },
+    nl: { t: "Bouillon van restjes", s: ["Bewaar in de vriezer een zak voor uienschillen, wortelpuntjes, preigroen, selderijvoeten, kruidenstelen en paddenstoelresten.", "Is de zak vol: onder water zetten, 45–60 minuten laten trekken en zeven.", "Wees zuinig met kool, broccoli en bloemkool (bouillon wordt zwavelig) en met biet (alles wordt roze)."] } },
+  crisps: { src: ["gdn"],
+    en: { t: "Peel crisps", s: ["Toss peelings with a little oil and salt.", "Spread in one layer and bake at 180–200 °C for 10–15 minutes.", "Watch closely at the end; thin peels burn fast."] },
+    nl: { t: "Schillenchips", s: ["Hussel de schillen met een beetje olie en zout.", "Verdeel in één laag en bak 10–15 minuten op 180–200 °C.", "Houd ze aan het eind goed in de gaten; dunne schillen verbranden snel."] } },
+  powder: { src: ["heywood", "nelson"],
+    en: { t: "Dry and grind", s: ["Spread offcuts on a tray in the oven on its lowest setting.", "Leave several hours until completely dry and brittle.", "Blitz to powder and keep in a closed jar. Carrot gives colour and sweetness (Heywood); mushroom trimmings give an umami powder (Nelson)."] },
+    nl: { t: "Drogen en malen", s: ["Leg snijresten op een bakplaat in de oven op de laagste stand.", "Laat een paar uur drogen tot ze helemaal droog en bros zijn.", "Maal tot poeder en bewaar in een afgesloten pot. Wortel geeft kleur en zoetheid (Heywood); paddenstoelresten geven umamipoeder (Nelson)."] } },
+  pickle: { src: ["heywood"],
+    en: { t: "Quick pickle", s: ["Heywood's liquid: 200 ml vinegar, 200 ml water, 100 g sugar, 2 g salt.", "Bring to the boil and pour over sliced stalks, rind or stems in a clean jar.", "Cool, then keep in the fridge. Ready the next day."] },
+    nl: { t: "Snel inmaken", s: ["Het vocht van Heywood: 200 ml azijn, 200 ml water, 100 g suiker, 2 g zout.", "Aan de kook brengen en over gesneden stelen, korst of stronken gieten in een schone pot.", "Laten afkoelen en in de koelkast bewaren. De volgende dag klaar."] } },
+  ferment: { src: ["handling", "hunt", "kitchen"],
+    en: { t: "Ferment", s: ["Shred leaves, cores or carrot offcuts; weigh them and add 2% salt.", "Massage until juicy, pack tightly into a jar so the vegetables sit under their own brine.", "Leave at room temperature 3–10 days, then refrigerate. Cauliflower leaves make kimchi; carrot offcuts make a fermented slaw (Handling). Throw it out if it grows fuzzy mould or smells rotten."] },
+    nl: { t: "Fermenteren", s: ["Snijd blad, kernen of wortelresten fijn; weeg en voeg 2% zout toe.", "Kneed tot er vocht vrijkomt en druk stevig in een pot, zodat alles onder het eigen pekel staat.", "3–10 dagen op kamertemperatuur, daarna de koelkast in. Bloemkoolblad wordt kimchi, wortelresten een gefermenteerde slaw (Handling). Weggooien bij pluizige schimmel of rotte geur."] } },
+  jam: { src: ["heywood", "handling"],
+    en: { t: "Jam and chutney", s: ["Sweet scraps (squash, sweet roots, fruit peels) suit jam; savoury ones suit chutney.", "Heywood cooks tough fennel layers with salt, sugar and vinegar into a sweet-sour jam for fish.", "Handling turns banana skins into chutney."] },
+    nl: { t: "Jam en chutney", s: ["Zoete restjes (pompoen, zoete wortels, fruitschillen) passen in jam; hartige in chutney.", "Heywood kookt taaie venkellagen met zout, suiker en azijn tot een zoetzure jam bij vis.", "Handling maakt chutney van bananenschillen."] } },
+  tea: { src: ["heywood", "oddbox"],
+    en: { t: "Peel tea", s: ["Dry fruit skins (apple, pear, citrus, pineapple) on a rack or in a low oven.", "Use like loose tea; mix flavours, e.g. pear skin with herbs (Heywood).", "Use organic or untreated citrus for tea."] },
+    nl: { t: "Schillenthee", s: ["Droog fruitschillen (appel, peer, citrus, ananas) op een rooster of in een lage oven.", "Gebruik als losse thee; combineer smaken, bijv. perenschil met kruiden (Heywood).", "Gebruik biologisch of onbehandeld citrusfruit voor thee."] } },
+  oil: { src: ["heywood"], warn: ["oil"],
+    en: { t: "Infused oil", s: ["Heywood warms leek and spring-onion tops in oil to infuse it, then drizzles it on dishes.", "Strain out the greens.", "Keep it in the fridge and use it within a week."] },
+    nl: { t: "Olie met smaak", s: ["Heywood laat preigroen en bosuigroen trekken in warme olie en sprenkelt die over gerechten.", "Zeef het groen eruit.", "Bewaar in de koelkast en gebruik binnen een week."] } },
+  pesto: { src: ["gdn", "kitchen"],
+    en: { t: "Leaf pesto", s: ["Blend carrot tops, radish leaves, soft herb stems or tired rocket with nuts or seeds, oil, lemon and cheese if you like.", "Mix bitter greens with milder herbs.", "Freeze in small portions."] },
+    nl: { t: "Pesto van loof", s: ["Pureer wortelloof, radijsblad, zachte kruidenstelen of slappe rucola met noten of zaden, olie, citroen en eventueel kaas.", "Meng bitter groen met mildere kruiden.", "In kleine porties invriezen."] } },
+  vinegar: { src: ["bonneau", "kitchen"],
+    en: { t: "Scrap vinegar", s: ["Bonneau collects fruit scraps: cores, peels, mango stones, strawberry tops.", "Cover with water plus a spoon of sugar per cup, stir daily for 1–2 weeks until it smells sour, then strain.", "Leave a few more weeks to turn to vinegar."] },
+    nl: { t: "Azijn van fruitrestjes", s: ["Bonneau verzamelt fruitrestjes: klokhuizen, schillen, mangopitten, aardbeikroontjes.", "Onder water zetten met een lepel suiker per kopje, 1–2 weken dagelijks roeren tot het zuur ruikt, dan zeven.", "Nog een paar weken laten staan tot het azijn is."] } },
+  seeds: { src: ["gdn"],
+    en: { t: "Roast seeds", s: ["Rinse squash or melon seeds and pat dry.", "Toss with salt, smoked paprika and olive oil.", "Roast at about 170 °C until crisp, 15–20 minutes."] },
+    nl: { t: "Zaden roosteren", s: ["Spoel pompoen- of meloenpitten af en dep ze droog.", "Hussel met zout, gerookt paprikapoeder en olijfolie.", "Rooster op ca. 170 °C tot ze knapperig zijn, 15–20 minuten."] } },
+  tepache: { src: ["gdn", "kitchen"],
+    en: { t: "Tepache", s: ["Put scrubbed pineapple skin and core in a jar with brown sugar and water.", "Cover loosely and leave 2–3 days at room temperature until lightly fizzy.", "Strain and chill."] },
+    nl: { t: "Tepache", s: ["Doe geboende ananasschil en -kern in een pot met bruine suiker en water.", "Losjes afdekken en 2–3 dagen op kamertemperatuur laten staan tot het licht bruist.", "Zeven en koud zetten."] } },
+  candied: { src: ["kitchen"],
+    en: { t: "Candied peel", s: ["Cut organic citrus peel into strips.", "Blanch two or three times in fresh water to take off bitterness.", "Simmer in sugar syrup until translucent, then dry on a rack."] },
+    nl: { t: "Gekonfijte schil", s: ["Snijd biologische citrusschil in reepjes.", "Twee à drie keer blancheren in vers water tegen de bitterheid.", "Zacht laten koken in suikersiroop tot ze glazig zijn, dan laten drogen op een rooster."] } },
+  soup: { src: ["hunt", "handling", "kitchen"],
+    en: { t: "Scrap soup", s: ["Simmer peelings, pods or woody ends until soft.", "Blend, then push through a sieve to remove fibres.", "Dutch white-asparagus soup is classically made this way from the peelings; Hunt does the same with green asparagus ends, Handling with pea pods."] },
+    nl: { t: "Soep van restjes", s: ["Laat schillen, peulen of houtige uiteinden zacht koken.", "Pureer en wrijf door een zeef om de vezels eruit te halen.", "Aspergesoep wordt traditioneel zo van de schillen gemaakt; Hunt doet hetzelfde met groene-aspergepuntjes, Handling met erwtenpeulen."] } },
+  roast: { src: ["handling"],
+    en: { t: "Roast stalks and cores", s: ["Slice stalks, cores and thick stems evenly.", "Roast with oil and salt at 200 °C until browned at the edges.", "Roasting brings out their sweetness (Handling)."] },
+    nl: { t: "Stelen en kernen roosteren", s: ["Snijd stelen, kernen en dikke stronken in gelijke stukken.", "Rooster met olie en zout op 200 °C tot de randjes bruin zijn.", "Roosteren haalt de zoetheid naar boven (Handling)."] } }
+};
+
+const UI = {
+  en: {
+    title: "Root to tip", tagline: "How to eat fruit and vegetables in full",
+    search: "Search fruit, vegetable or herb", all: "All", parts: "Parts", organic: "I'm using organic produce",
+    organicOn: "Organic: pesticide and post-harvest warnings are folded away.",
+    organicOff: "Conventional: all warnings shown.",
+    tabProducts: "Products", tabTech: "Techniques", tabAbout: "About & sources",
+    results: n => `${n} products`, none: "Nothing matches. Try the Dutch or English name.",
+    official: "Official guidance", chef: "How to use it", fibre: "Measured fibre",
+    techniques: "Techniques", productWarn: "For the whole product",
+    organicFolded: "Organic: this concern largely falls away", verify: "Source not yet checked",
+    back: "Back", close: "Close", usedFor: "Used for", lang: "NL",
+    usefulParts: n => `${n} parts`,
+    status: "Status", evidence: "Evidence"
+  },
+  nl: {
+    title: "Van wortel tot top", tagline: "Groente en fruit helemaal opeten",
+    search: "Zoek groente, fruit of kruid", all: "Alles", parts: "Delen", organic: "Ik gebruik biologische producten",
+    organicOn: "Biologisch: waarschuwingen over bestrijdingsmiddelen en naoogstbehandeling zijn ingeklapt.",
+    organicOff: "Gangbaar: alle waarschuwingen staan open.",
+    tabProducts: "Producten", tabTech: "Technieken", tabAbout: "Over & bronnen",
+    results: n => `${n} producten`, none: "Niets gevonden. Probeer de Nederlandse of Engelse naam.",
+    official: "Officieel advies", chef: "Zo gebruik je het", fibre: "Gemeten vezels",
+    techniques: "Technieken", productWarn: "Voor het hele product",
+    organicFolded: "Biologisch: dit bezwaar vervalt grotendeels", verify: "Bron nog niet gecontroleerd",
+    back: "Terug", close: "Sluiten", usedFor: "Gebruikt voor", lang: "EN",
+    usefulParts: n => `${n} delen`,
+    status: "Status", evidence: "Onderbouwing"
+  }
+};
+
+const PRODUCTS = [];
+function P(id, nl, en, cat, alias, parts, tech, extra) {
+  extra = extra || {};
+  PRODUCTS.push({ id, nl, en, cat, alias,
+    parts: parts.map(p => ({ t: p[0], s: p[1], en: p[2], nl: p[3], src: p[4].split(" ").filter(Boolean), w: p[5].split(" ").filter(Boolean) })),
+    tech: tech || [], fibre: extra.fibre || null, neg: !!extra.neg, w: extra.w || [] });
+}
+// Roots, tubers, alliums, brassicas, leafy greens.
+// P(id, nl, en, cat, aliases, parts, techniques, extra)
+// part: [type, status, en, nl, sources, warnings]
+
+P("aardappel", "Aardappel", "Potato", "veg", "aardappelen krieltjes potatoes spud",
+  [["skin", "eat", "Scrub instead of peeling. Peelings you do take off can be baked into crisps.", "Boenen in plaats van schillen. Schillen die je toch weghaalt kun je tot chips bakken.", "gdn", "glyco"],
+   ["green", "no", "Cut away green patches and sprouts generously; the rest of the potato is fine.", "Snijd groene plekken en kiemen ruim weg; de rest van de aardappel is prima.", "efsa", "green"]],
+  ["crisps"]);
+
+P("zoete-aardappel", "Zoete aardappel", "Sweet potato", "veg", "bataat sweet potato yam",
+  [["skin", "eat", "The skin is thin and good to eat: roast or bake with it on. (True yams, sold in toko's, do need peeling.)", "De schil is dun en goed te eten: rooster of bak hem mee. (Echte yams uit de toko moet je wel schillen.)", "gdn", ""]],
+  ["crisps"]);
+
+P("wortel", "Wortel", "Carrot", "veg", "wortels peen bospeen winterpeen waspeen carrots",
+  [["skin", "eat", "Scrub instead of peeling.", "Boenen in plaats van schrappen.", "gdn", ""],
+   ["tops", "eat", "Carrot tops from bunched carrots: blitz into pesto or chop like parsley. Slightly bitter, so mix with milder herbs.", "Loof van bospeen: tot pesto pureren of fijnhakken als peterselie. Iets bitter, dus mengen met mildere kruiden.", "gdn kitchen", ""],
+   ["trim", "eat", "Ends and offcuts: dry and grind into a sweet orange powder (Heywood), ferment into slaw (Handling), or save for stock.", "Puntjes en snijresten: drogen en malen tot zoet oranje poeder (Heywood), fermenteren tot slaw (Handling), of bewaren voor bouillon.", "heywood handling", ""]],
+  ["pesto", "powder", "ferment", "stock"]);
+
+P("pastinaak", "Pastinaak", "Parsnip", "veg", "parsnips",
+  [["skin", "eat", "Scrub and roast with the skin on. Peelings make good crisps.", "Boenen en met schil roosteren. Schillen worden lekkere chips.", "gdn kitchen", ""],
+   ["core", "cook", "The woody core of big parsnips doesn't need cutting out: cook it a little longer or blend it into soup.", "De houtige kern van grote pastinaken hoeft er niet uit: iets langer garen of door de soep pureren.", "kitchen", ""]],
+  ["crisps", "soup"]);
+
+P("knolselderij", "Knolselderij", "Celeriac", "veg", "knolselder celeriac celery root",
+  [["skin", "cook", "Leave most of the skin on and scrub hard. Cut off only the gnarled root end and soil-filled crevices; those go into stock.", "Laat het grootste deel van de schil zitten en boen stevig. Snijd alleen de knobbelige onderkant en zanderige plooien weg; die gaan in de bouillon.", "kcl gdn kitchen", ""],
+   ["leaves", "eat", "Stalks and leaves, if attached, taste strong: use sparingly as a herb or in stock.", "Stelen en blad, als die eraan zitten, smaken sterk: spaarzaam als kruid of in bouillon.", "kitchen", ""]],
+  ["stock", "crisps"], { fibre: { en: "Skin: 84% more fibre than the flesh.", nl: "Schil: 84% meer vezels dan het vruchtvlees." } });
+
+P("rode-biet", "Rode biet", "Beetroot", "veg", "biet bieten kroten beetroot beets",
+  [["skin", "eat", "No need to peel: scrub and roast or boil with the skin on.", "Schillen hoeft niet: boenen en met schil roosteren of koken.", "kcl gdn", ""],
+   ["leaves", "cook", "Cook like chard: blanch and dress (Heywood). Very young leaves can go raw into salad.", "Bereid als snijbiet: blancheren en aanmaken (Heywood). Heel jong blad kan rauw in de salade.", "heywood kitchen", "oxalate"],
+   ["stalk", "cook", "Chop and cook with the leaves, or quick-pickle them.", "Snijd fijn en gaar mee met het blad, of maak ze snel in.", "kitchen", ""]],
+  ["pickle"], { fibre: { en: "Skin: 40% more fibre than the flesh.", nl: "Schil: 40% meer vezels dan het vruchtvlees." } });
+
+P("raap", "Raap / raapstelen", "Turnip / turnip greens", "veg", "meiraap knolraap raapstelen turnip turnip greens",
+  [["skin", "eat", "Young turnips need no peeling. Older ones have tougher skin: peel thinly and add the peel to stock.", "Jonge raapjes hoef je niet te schillen. Oudere hebben een taaiere schil: dun schillen en de schil in de bouillon.", "gdn kitchen", ""],
+   ["leaves", "eat", "The greens (sold separately as raapstelen) are good raw when young, or stirred through stamppot.", "Het blad (los verkocht als raapstelen) is jong rauw lekker, of door de stamppot.", "kitchen", ""]],
+  ["stock"]);
+
+P("radijs", "Radijs", "Radish", "veg", "radijsjes radish radishes",
+  [["leaves", "eat", "Wash well. Young leaves go raw into salad; older ones wilt in a pan or make pesto.", "Goed wassen. Jong blad rauw in de salade; ouder blad kort slinken in de pan of tot pesto.", "kitchen", ""],
+   ["root", "eat", "Eat the whole radish, thin tail included.", "Eet de hele radijs, staartje en al.", "kitchen", ""]],
+  ["pesto"]);
+
+P("rettich", "Rettich / daikon", "Daikon", "veg", "daikon witte rammenas mooli rammenas",
+  [["skin", "eat", "Scrub; peel only if very thick and use the peel in stir-fries or pickles.", "Boenen; alleen schillen als de schil erg dik is, en die schil in wokgerechten of zuur gebruiken.", "kitchen", ""],
+   ["leaves", "cook", "If attached, cook like turnip greens.", "Als het eraan zit: bereiden als raapstelen.", "kitchen", ""]],
+  ["pickle"]);
+
+P("schorseneer", "Schorseneer", "Black salsify", "veg", "schorseneren black salsify scorzonera",
+  [["skin", "cook", "The black skin is usually peeled off. Lower-waste: boil the scrubbed roots whole, then rub the skin off; nothing lost to the peeler. Some cooks roast them scrubbed and unpeeled.", "De zwarte schil wordt meestal geschild. Minder verspilling: de geboende wortels heel koken en daarna de schil eraf wrijven; niets gaat verloren aan de dunschiller. Sommige koks roosteren ze geboend met schil.", "kitchen", ""]],
+  []);
+
+P("aardpeer", "Aardpeer", "Jerusalem artichoke", "veg", "topinamboer jerusalem artichoke sunchoke",
+  [["skin", "eat", "Don't peel: scrub with a brush. The skins crisp up nicely when roasted.", "Niet schillen: boenen met een borstel. De schil wordt lekker krokant in de oven.", "gdn", ""]],
+  ["roast"]);
+
+P("koolrabi", "Koolrabi", "Kohlrabi", "veg", "kohlrabi",
+  [["skin", "cook", "Young kohlrabi skin is fine. On older ones the outer layer is fibrous: shred it very finely into slaw or simmer it in soup.", "De schil van jonge koolrabi is prima. Bij oudere is de buitenlaag vezelig: heel fijn snijden voor coleslaw of meekoken in soep.", "kitchen", ""],
+   ["leaves", "cook", "Cook like kale; young leaves can go raw.", "Bereiden als boerenkool; jong blad kan rauw.", "kitchen", ""]],
+  ["soup"]);
+
+P("gember", "Gember", "Ginger", "veg", "gemberwortel ginger",
+  [["skin", "eat", "No need to peel: wash and grate with the skin.", "Schillen hoeft niet: wassen en met schil raspen.", "gdn", ""],
+   ["trim", "flavour", "Dried-out knobs and peelings: steep for tea or add to stock.", "Uitgedroogde stukjes en schillen: laten trekken als thee of in de bouillon.", "kitchen", ""]],
+  ["tea", "stock"]);
+
+P("mierikswortel", "Mierikswortel", "Horseradish", "veg", "mierik horseradish",
+  [["skin", "eat", "Grate it with the skin on: that's where the heat is fiercest (Heywood).", "Rasp hem met schil: daar zit de felste scherpte (Heywood).", "heywood", ""]],
+  []);
+
+P("peterseliewortel", "Peterseliewortel", "Parsley root", "veg", "wortelpeterselie parsley root",
+  [["skin", "eat", "Scrub, don't peel.", "Boenen, niet schillen.", "kitchen", ""],
+   ["tops", "eat", "Use the tops like flat-leaf parsley.", "Gebruik het loof als platte peterselie.", "kitchen", ""]],
+  []);
+
+P("kurkuma", "Kurkuma", "Fresh turmeric", "veg", "geelwortel turmeric",
+  [["skin", "eat", "The skin is thin: wash and grate. Wear gloves if you mind yellow fingers.", "De schil is dun: wassen en raspen. Draag handschoenen als je geen gele vingers wilt.", "kitchen", ""]],
+  []);
+
+// Alliums
+P("ui", "Ui", "Onion", "veg", "uien rode ui gele ui onion red onion",
+  [["papery", "flavour", "Dry outer skins add colour and depth to stock; strain them out. Red onion skins turn stock pink.", "Droge buitenschillen geven kleur en diepte aan bouillon; daarna zeven. Rode uienschillen kleuren de bouillon roze.", "kitchen", ""],
+   ["root", "flavour", "Root ends go in the stock bag.", "Wortelkapjes gaan in de bouillonzak.", "kitchen", ""],
+   ["outer", "eat", "The slightly leathery first fleshy layer is fine: chop it finely and cook it a bit longer.", "De iets leerachtige eerste vlezige laag is prima: fijnhakken en wat langer bakken.", "kitchen", ""]],
+  ["stock"]);
+
+P("sjalot", "Sjalot", "Shallot", "veg", "sjalotten shallot",
+  [["papery", "flavour", "Skins into the stock bag; strain out after simmering.", "Schillen in de bouillonzak; na het trekken zeven.", "kitchen", ""],
+   ["root", "flavour", "Root ends into stock.", "Wortelkapjes in de bouillon.", "kitchen", ""]],
+  ["stock"]);
+
+P("knoflook", "Knoflook", "Garlic", "veg", "knoflookteen garlic",
+  [["papery", "flavour", "Skins into stock, then strain.", "Velletjes in de bouillon, daarna zeven.", "kitchen", ""],
+   ["shoot", "eat", "The green shoot in older cloves is edible but slightly bitter; pick it out only if you're using the garlic raw.", "De groene kiem in oudere tenen is eetbaar maar iets bitter; haal hem alleen weg als je de knoflook rauw gebruikt.", "kitchen", ""]],
+  ["stock"]);
+
+P("prei", "Prei", "Leek", "veg", "preien leek leeks",
+  [["tops", "cook", "Use the dark green tops. Wash them well (grit hides between the layers) and cook them longer than the white. Heywood infuses oil with them.", "Gebruik het donkergroene deel. Goed wassen (zand zit tussen de lagen) en langer garen dan het wit. Heywood laat er olie mee trekken.", "kcl gdn heywood", ""],
+   ["root", "cook", "Wash the roots well, then fry them into crisp tangles or add them to stock.", "Was de worteltjes goed en bak ze krokant, of doe ze in de bouillon.", "kitchen", ""]],
+  ["oil", "stock"], { fibre: { en: "Tops and roots: 77% more fibre than the rest of the leek.", nl: "Groen en worteltjes: 77% meer vezels dan de rest van de prei." } });
+
+P("lente-ui", "Lente-ui", "Spring onion", "veg", "bosui bosuitjes spring onion scallion",
+  [["tops", "eat", "Use all the green. Heywood infuses oil with spring-onion tops.", "Gebruik al het groen. Heywood laat olie trekken met bosuigroen.", "heywood", ""],
+   ["root", "cook", "Wash and fry until crisp, or add to stock.", "Wassen en krokant bakken, of in de bouillon.", "kitchen", ""]],
+  ["oil", "stock"]);
+
+// Brassicas
+P("bloemkool", "Bloemkool", "Cauliflower", "veg", "bloemkolen cauliflower",
+  [["leaves", "cook", "Roast, pickle or ferment them into kimchi (Handling). Or cook cauliflower cheese with florets, stalk and leaves together (Oddbox).", "Roosteren, inmaken of fermenteren tot kimchi (Handling). Of maak bloemkool met kaassaus van roosjes, stronk en blad samen (Oddbox).", "kcl handling oddbox", ""],
+   ["core", "eat", "Grate the core raw into couscous or rice (Heywood), or slice and roast it.", "Rasp de stronk rauw door couscous of rijst (Heywood), of snijd en rooster hem.", "heywood handling", ""]],
+  ["ferment", "pickle", "roast"], { fibre: { en: "Core and leaves: 112% more fibre than the florets.", nl: "Stronk en blad: 112% meer vezels dan de roosjes." } });
+
+P("romanesco", "Romanesco", "Romanesco", "veg", "romanesco broccoli",
+  [["leaves", "cook", "Cook the leaves like cauliflower leaves: roast or braise.", "Bereid het blad als bloemkoolblad: roosteren of stoven.", "kitchen", ""],
+   ["core", "eat", "Slice or grate the core and cook it with the florets.", "Snijd of rasp de stronk en gaar hem mee met de roosjes.", "kitchen", ""]],
+  ["roast"]);
+
+P("broccoli", "Broccoli", "Broccoli", "veg", "broccoli calabrese",
+  [["stalk", "eat", "Peel only the toughest outer skin, then slice and cook with the florets or eat raw. Measured: the stalk has 28% less fibre than the florets, so you eat it for flavour and less waste, not for fibre.", "Schil alleen de taaiste buitenkant, snijd in plakjes en gaar mee of eet rauw. Gemeten: de steel heeft 28% minder vezels dan de roosjes, dus je eet hem voor de smaak en minder verspilling, niet voor de vezels.", "kcl", ""],
+   ["leaves", "cook", "The leaves along the stalk cook like kale.", "Het blad langs de steel bereid je als boerenkool.", "kitchen", ""]],
+  ["roast"], { fibre: { en: "Stalk: 28% less fibre than the florets.", nl: "Steel: 28% minder vezels dan de roosjes." }, neg: true });
+
+P("spruitjes", "Spruitjes", "Brussels sprouts", "veg", "spruiten brussels sprouts",
+  [["outerl", "eat", "Loose outer leaves: stir-fry or roast until crisp. Throw out only yellow or damaged ones.", "Losse buitenblaadjes: roerbakken of krokant roosteren. Alleen gele of beschadigde weggooien.", "kitchen", ""],
+   ["stalk", "flavour", "If you buy them on the stalk: the stalk is woody. Peel and braise the inner core, or use it in stock.", "Gekocht aan de stronk? Die is houtig. Schil en stoof de binnenkern, of gebruik hem in bouillon.", "kitchen", ""]],
+  ["roast"]);
+
+P("boerenkool", "Boerenkool", "Kale", "veg", "krulkool palmkool cavolo nero kale curly kale",
+  [["stems", "cook", "Chop the stems finely and cook them longer than the leaves, or roast them (Handling). Measured: 6–7% more fibre than the leaves.", "Snijd de stelen fijn en gaar ze langer dan het blad, of rooster ze (Handling). Gemeten: 6–7% meer vezels dan het blad.", "kcl handling", ""]],
+  ["roast"], { fibre: { en: "Stems: 6–7% more fibre than the leaves.", nl: "Stelen: 6–7% meer vezels dan het blad." } });
+
+P("witte-kool", "Witte kool", "White cabbage", "veg", "wittekool white cabbage zuurkool",
+  [["core", "eat", "Slice the core thinly into slaw or stir-fries, or ferment it with the leaves into sauerkraut.", "Snijd de kern dun voor coleslaw of roerbak, of fermenteer hem met het blad tot zuurkool.", "kitchen", ""],
+   ["outerl", "cook", "Tough outer leaves: shred and braise, or use in soup.", "Taaie buitenbladeren: fijnsnijden en stoven, of in soep.", "kitchen", ""]],
+  ["ferment", "soup"]);
+
+P("rode-kool", "Rode kool", "Red cabbage", "veg", "rodekool red cabbage",
+  [["core", "eat", "Slice the core thinly and cook it with the rest, or shred it raw into slaw.", "Snijd de kern dun en stoof hem mee, of rauw door de coleslaw.", "kitchen", ""],
+   ["outerl", "cook", "Outer leaves go in with the rest; just trim damaged bits.", "Buitenbladeren gaan gewoon mee; snijd alleen beschadigde stukjes weg.", "kitchen", ""]],
+  ["ferment", "pickle"]);
+
+P("savooiekool", "Savooiekool", "Savoy cabbage", "veg", "savooie savoy cabbage",
+  [["outerl", "cook", "The dark outer leaves are the tastiest: blanch and use as wraps, or shred and braise.", "De donkere buitenbladeren zijn het smaakvolst: blancheren voor koolrolletjes, of fijnsnijden en stoven.", "kitchen", ""],
+   ["core", "eat", "Slice the core thinly and cook it along.", "Snijd de kern dun en gaar hem mee.", "kitchen", ""]],
+  []);
+
+P("spitskool", "Spitskool", "Pointed cabbage", "veg", "spitskool hispi pointed cabbage sweetheart cabbage",
+  [["core", "eat", "The core is tender: slice it with the leaves, raw or cooked.", "De kern is mals: mee snijden, rauw of gekookt.", "kitchen", ""]],
+  ["roast"]);
+
+P("paksoi", "Paksoi", "Pak choi", "veg", "paksoy bok choy pak choi",
+  [["base", "eat", "Eat the whole head; the base is crisp and sweet. Rinse grit from between the stalks.", "Eet de hele kop; de voet is knapperig en zoet. Spoel zand tussen de stelen weg.", "kitchen", ""]],
+  []);
+
+P("chinese-kool", "Chinese kool", "Chinese leaf", "veg", "chinese kool napa cabbage chinese leaf",
+  [["core", "eat", "Slice the core with the leaves; it's the classic base for kimchi.", "Snijd de kern mee met het blad; de klassieke basis voor kimchi.", "kitchen", ""]],
+  ["ferment"]);
+
+// Leafy
+P("spinazie", "Spinazie", "Spinach", "veg", "bladspinazie spinach",
+  [["stems", "eat", "Chopped stems cook as fast as the leaves.", "Fijngesneden stelen zijn net zo snel gaar als het blad.", "kitchen", "oxalate"],
+   ["root", "eat", "The pink root ends on bunched spinach are edible once washed well.", "De roze worteltjes aan bosspinazie zijn eetbaar na goed wassen.", "kitchen", ""]],
+  []);
+
+P("snijbiet", "Snijbiet", "Swiss chard", "veg", "regenboogsnijbiet chard swiss chard",
+  [["stems", "cook", "Chop the stems and start them a few minutes before the leaves, or quick-pickle them.", "Snijd de stelen en zet ze een paar minuten eerder op dan het blad, of maak ze snel in.", "kitchen", "oxalate"]],
+  ["pickle"]);
+
+P("andijvie", "Andijvie", "Escarole", "veg", "andijvie escarole endive",
+  [["outerl", "cook", "Dark outer leaves are bitter raw but good cooked: stamppot, soup, stir-fry.", "Donkere buitenbladeren zijn rauw bitter maar gekookt lekker: stamppot, soep, roerbak.", "kitchen", ""],
+   ["core", "eat", "Slice the base along with the leaves.", "Snijd de voet mee met het blad.", "kitchen", ""]],
+  ["soup"]);
+
+P("kropsla", "Kropsla", "Butterhead lettuce", "veg", "sla botersla lettuce butterhead",
+  [["outerl", "cook", "Wilting outer leaves: braise with peas, or blend into soup.", "Slappe buitenbladeren: stoven met doperwten, of tot soep pureren.", "kitchen", ""],
+   ["core", "eat", "The stem and core are crunchy: slice them into the salad.", "Stronkje en hart zijn knapperig: mee in de salade.", "kitchen", ""]],
+  ["soup"]);
+
+P("ijsbergsla", "IJsbergsla", "Iceberg lettuce", "veg", "ijsberg iceberg lettuce",
+  [["core", "eat", "Slice the crunchy core into salads or stir-fries.", "Snijd het knapperige hart mee in salade of roerbak.", "kitchen", ""]],
+  []);
+
+P("rucola", "Rucola", "Rocket", "veg", "raketsla arugula rocket",
+  [["stems", "eat", "Stems are fine. Rocket going limp: blend into pesto.", "Stelen zijn prima. Wordt de rucola slap: pureer tot pesto.", "kitchen", ""]],
+  ["pesto"]);
+
+P("veldsla", "Veldsla", "Lamb's lettuce", "veg", "veldsla lambs lettuce corn salad mache",
+  [["root", "eat", "The little roots holding the rosettes together are edible; wash well.", "De worteltjes die de rozetjes bijeenhouden zijn eetbaar; goed wassen.", "kitchen", ""]],
+  []);
+
+P("witlof", "Witlof", "Chicory", "veg", "witloof chicory belgian endive",
+  [["core", "eat", "The core is bitterer but edible. Cut out the cone only if you want it milder.", "Het kegeltje is bitterder maar eetbaar. Snijd het alleen weg als je het milder wilt.", "kitchen", ""]],
+  []);
+
+P("radicchio", "Radicchio", "Radicchio", "veg", "rode witlof radicchio",
+  [["outerl", "cook", "Tougher outer leaves: grill or braise them.", "Steviger buitenbladeren: grillen of stoven.", "kitchen", ""],
+   ["core", "eat", "Slice the core with the leaves.", "Snijd de kern mee met het blad.", "kitchen", ""]],
+  []);
+
+// Stalks, fruiting vegetables, pods, mushrooms, herbs.
+
+P("bleekselderij", "Bleekselderij", "Celery", "veg", "selderij stengels celery",
+  [["leaves", "eat", "Eat the leaves raw in salads or use them as a herb.", "Eet het blad rauw in salades of gebruik het als kruid.", "gdn", ""],
+   ["base", "flavour", "The root end goes into stock. Outer stalks are just as edible as the inner ones.", "De voet gaat in de bouillon. Buitenste stengels zijn net zo eetbaar als de binnenste.", "kitchen", ""]],
+  ["stock"]);
+
+P("venkel", "Venkel", "Fennel", "veg", "knolvenkel fennel",
+  [["fronds", "eat", "Use the fronds like dill.", "Gebruik het groen als dille.", "kitchen", ""],
+   ["stalk", "cook", "Slice the stalks thinly and braise them, or use them in stock.", "Snijd de stelen dun en stoof ze, of gebruik ze in bouillon.", "kitchen", ""],
+   ["outer", "cook", "Tough outer layers and core: cook into a sweet-sour fennel jam (Heywood). Measured: 11% less fibre than the inner layers.", "Taaie buitenlagen en kern: inkoken tot zoetzure venkeljam (Heywood). Gemeten: 11% minder vezels dan de binnenste lagen.", "kcl heywood", ""]],
+  ["jam", "stock"], { fibre: { en: "Core and outer layers: 11% less fibre than the inner layers.", nl: "Kern en buitenlagen: 11% minder vezels dan de binnenlagen." }, neg: true });
+
+P("witte-asperge", "Witte asperge", "White asparagus", "veg", "asperges asperge white asparagus",
+  [["skin", "flavour", "Peelings: simmer 20–30 minutes for the stock of Dutch asparagus soup, then strain.", "Schillen: 20–30 minuten laten trekken voor de bouillon van aspergesoep, daarna zeven.", "kitchen", ""],
+   ["butts", "flavour", "Woody ends go into the same stock.", "Houtige uiteinden gaan in dezelfde bouillon.", "kitchen", ""]],
+  ["soup", "stock"]);
+
+P("groene-asperge", "Groene asperge", "Green asparagus", "veg", "groene asperges green asparagus",
+  [["butts", "cook", "Freeze the tough ends until you have enough for soup (blend and ideally sieve), or blanch and blend them into a salad dressing or flavoured butter (Hunt).", "Vries de taaie uiteinden in tot je genoeg hebt voor soep (pureren en liefst zeven), of blancheer en pureer ze tot dressing of kruidenboter (Hunt).", "hunt", ""]],
+  ["soup"]);
+
+P("rabarber", "Rabarber", "Rhubarb", "veg", "rhubarb",
+  [["leaves", "no", "Compost the leaves.", "Het blad gaat naar de gft-bak.", "bnf", "rhubarb"],
+   ["trim", "flavour", "Stalk ends and stringy bits: simmer with sugar and water for cordial, then strain.", "Steeluiteinden en draderige stukjes: met suiker en water laten trekken voor siroop, dan zeven.", "kitchen", ""]],
+  []);
+
+P("artisjok", "Artisjok", "Globe artichoke", "veg", "artisjokken artichoke",
+  [["stalk", "cook", "Peel the stringy outside; the inner stalk tastes like the heart.", "Schil de draderige buitenkant; de binnenkant van de steel smaakt als het hart.", "kitchen", ""],
+   ["outerl", "flavour", "Scrape the fleshy base of each leaf with your teeth, then use the leaves for stock.", "Schraap de vlezige onderkant van elk blad af met je tanden en gebruik de bladeren daarna voor bouillon.", "kitchen", ""],
+   ["choke", "no", "The hairy choke isn't toxic but can't be eaten: scoop it out.", "Het harige hooi is niet giftig maar oneetbaar: eruit lepelen.", "kitchen", ""]],
+  ["stock"]);
+
+// Fruiting vegetables
+P("tomaat", "Tomaat", "Tomato", "veg", "tomaten trostomaat snoeptomaat cherrytomaat tomato tomatoes",
+  [["skin", "eat", "Keep skin and seeds; much of the flavour sits in the jelly around the seeds.", "Houd schil en zaadjes aan; veel smaak zit in de gelei rond de zaadjes.", "kitchen", ""],
+   ["core", "eat", "Cut out only the hard stem scar, if there is one. Cores go into sauce.", "Snijd alleen het harde steelaanzetje weg, als dat er is. Kernen gaan in de saus.", "kitchen", ""],
+   ["vine", "flavour", "Some chefs steep the vine briefly in sauce or oil for a tomato-leaf aroma, then remove it.", "Sommige koks laten het trosje kort meetrekken in saus of olie voor tomatenbladaroma en halen het er daarna uit.", "kitchen", "nightleaf"]],
+  []);
+
+P("komkommer", "Komkommer", "Cucumber", "veg", "snackkomkommer cucumber",
+  [["skin", "eat", "Eat the skin. If a recipe wants it peeled, grate the peel into tzatziki or infuse it in water.", "Eet de schil. Vraagt een recept om schillen: rasp de schil door tzatziki of laat hem trekken in water.", "kitchen", ""],
+   ["trim", "eat", "The ends are fine; only the very tip can be bitter.", "De kontjes zijn prima; alleen het uiterste puntje kan bitter zijn.", "kitchen", ""]],
+  []);
+
+P("courgette", "Courgette", "Courgette", "veg", "courgettes zucchini",
+  [["seeds", "eat", "Skin, seeds and ends are all fine. In big courgettes the seedy middle goes into soup.", "Schil, zaadjes en kontjes zijn allemaal prima. Bij grote courgettes gaat het zaadhart in de soep.", "kitchen", ""],
+   ["flowers", "eat", "If you get the flowers: stuff and fry them.", "Krijg je de bloemen erbij: vullen en bakken.", "kitchen", ""]],
+  ["soup"]);
+
+P("aubergine", "Aubergine", "Aubergine", "veg", "eggplant aubergine",
+  [["skin", "eat", "Leave the skin on.", "Laat de schil zitten.", "kitchen", ""],
+   ["calyx", "no", "Trim off only the spiky green cap.", "Snijd alleen het stekelige groene kapje weg.", "kitchen", ""]],
+  []);
+
+P("paprika", "Paprika", "Bell pepper", "veg", "puntpaprika bell pepper sweet pepper capsicum",
+  [["seeds", "eat", "Roast peppers without deseeding them; seeds and the white placenta can go into sauces.", "Rooster paprika's zonder ze te ontpitten; zaadjes en zaadlijst kunnen in sauzen.", "kcl gdn", ""],
+   ["stalk", "no", "The stalk itself is woody: trim just that.", "Het steeltje zelf is houtig: alleen dat wegsnijden.", "kitchen", ""]],
+  ["roast"], { fibre: { en: "Stalk, seeds and placenta: 234% more fibre than the flesh.", nl: "Steel, zaadjes en zaadlijst: 234% meer vezels dan het vruchtvlees." } });
+
+P("spaanse-peper", "Spaanse peper", "Chilli", "veg", "rode peper chilipeper chili chilli chilli pepper",
+  [["seeds", "eat", "Seeds and membrane hold most of the heat: keep them for a hotter dish, or dry them for chilli flakes.", "Zaadjes en zaadlijst bevatten de meeste scherpte: houd ze aan voor een pittiger gerecht, of droog ze tot chilivlokken.", "kitchen", ""],
+   ["stalk", "no", "Trim the stalk only.", "Alleen het steeltje weg.", "kitchen", ""]],
+  ["powder"]);
+
+P("butternut", "Butternut", "Butternut squash", "veg", "flespompoen pompoen butternut squash",
+  [["skin", "eat", "Roast with the skin on until crisp (Handling). Thick-skinned pieces: braise 10 minutes in stock first.", "Rooster met schil tot hij krokant is (Handling). Stukken met dikke schil: eerst 10 minuten stoven in bouillon.", "handling gdn", "pest"],
+   ["seeds", "eat", "Roast with salt, smoked paprika and olive oil, or ferment them into miso (Handling).", "Rooster met zout, gerookt paprikapoeder en olijfolie, of fermenteer ze tot miso (Handling).", "gdn handling", ""]],
+  ["seeds", "roast"], { fibre: { en: "Skin and seeds: 9.25 g fibre per 100 g.", nl: "Schil en zaden: 9,25 g vezels per 100 g." } });
+
+P("hokkaido", "Hokkaido-pompoen", "Red kuri squash", "veg", "hokkaido pompoen potimarron red kuri squash",
+  [["skin", "eat", "The thin skin softens completely when cooked: no peeling.", "De dunne schil wordt helemaal zacht als je hem gaart: niet schillen.", "kitchen", "pest"],
+   ["seeds", "eat", "Roast the seeds.", "Rooster de pitten.", "gdn", ""]],
+  ["seeds"]);
+
+P("mais", "Maïskolf", "Corn on the cob", "veg", "mais maiskolf sweetcorn corn",
+  [["cob", "flavour", "Simmer stripped cobs for a sweet stock.", "Laat kale kolven trekken voor een zoete bouillon.", "kitchen", ""],
+   ["silk", "flavour", "Dry the silk and steep it as tea, or just pull it off.", "Droog de baard en zet er thee van, of trek hem gewoon los.", "kitchen", ""],
+   ["husk", "flavour", "Wrap fish or vegetables in the husks to steam or grill.", "Wikkel vis of groente in de schutbladeren om te stomen of te grillen.", "kitchen", ""]],
+  ["stock"]);
+
+// Pods
+P("sperziebonen", "Sperziebonen", "Green beans", "veg", "boontjes haricots verts prinsessenbonen green beans",
+  [["trim", "cook", "Snip only the stalk end; the thin tail can stay. Always cook them.", "Knip alleen het steelpuntje eraf; het dunne staartje mag blijven. Altijd gaar koken.", "kitchen", "rawbeans"]],
+  []);
+
+P("peultjes", "Peultjes & sugarsnaps", "Mangetout & sugar snaps", "veg", "peulen sugarsnaps snow peas mangetout sugar snaps",
+  [["pod", "eat", "Eat the whole pod. Pull off the string only if it's tough.", "Eet de hele peul. Trek het draadje er alleen af als het taai is.", "kitchen", ""]],
+  []);
+
+P("doperwten", "Doperwten in de peul", "Peas in the pod", "veg", "erwten peas fresh peas",
+  [["pod", "cook", "Simmer the pods and blend them into soup or use them in a risotto (Handling). Sieve out the papery inner skin.", "Laat de peulen trekken en pureer ze tot soep of gebruik ze in risotto (Handling). Zeef het papierachtige binnenvlies eruit.", "handling", ""]],
+  ["soup"]);
+
+P("tuinbonen", "Tuinbonen", "Broad beans", "veg", "tuinboon fava broad beans fava beans",
+  [["pod", "cook", "Very young pods can be sliced and cooked whole. Older pods: simmer for soup and sieve.", "Heel jonge peulen kun je in stukjes heel koken. Oudere peulen: laten trekken voor soep en zeven.", "kitchen", ""],
+   ["beanskin", "eat", "The inner skins of young beans are fine; peel them only on large beans if you dislike them.", "De velletjes van jonge bonen zijn prima; dop ze alleen bij grote bonen als je ze niet lekker vindt.", "kitchen", ""]],
+  ["soup"], { w: ["favism"] });
+
+// Mushrooms
+P("champignon", "Champignon", "Mushroom", "mush", "champignons kastanjechampignon paddenstoel mushrooms chestnut mushroom",
+  [["stalk", "eat", "Stems are as good as caps; trim only the dry base.", "Steeltjes zijn net zo lekker als de hoedjes; snijd alleen het droge voetje weg.", "kitchen", ""],
+   ["trim", "flavour", "Trimmings: simmer for stock, then dry and grind the solids into umami powder (Nelson).", "Snijresten: laten trekken voor bouillon, daarna drogen en malen tot umamipoeder (Nelson).", "nelson", ""]],
+  ["stock", "powder"]);
+
+P("oesterzwam", "Oesterzwam", "Oyster mushroom", "mush", "oesterzwammen oyster mushroom",
+  [["base", "flavour", "The tough base where the cluster joins: stock or umami powder.", "De taaie voet waar de tros samenkomt: bouillon of umamipoeder.", "kitchen", ""]],
+  ["stock", "powder"]);
+
+P("shiitake", "Shiitake", "Shiitake", "mush", "shii-take shiitake",
+  [["stalk", "flavour", "Stems are too tough to eat: simmer them in stock or dry them for powder.", "Steeltjes zijn te taai om te eten: laten trekken in bouillon of drogen voor poeder.", "kitchen", ""]],
+  ["stock", "powder"]);
+
+// Herbs
+P("peterselie", "Peterselie", "Parsley", "herb", "platte peterselie krulpeterselie parsley",
+  [["stems", "eat", "Chop the stems finely and add them at the start of cooking with the other aromatics.", "Hak de stelen fijn en bak ze aan het begin mee met de andere smaakmakers.", "gdn", ""]],
+  ["pesto", "stock"]);
+
+P("koriander", "Koriander", "Coriander", "herb", "ketoembar cilantro coriander",
+  [["stems", "eat", "Use the stems like the leaves: chop finely and cook at the start.", "Gebruik de stelen als het blad: fijnhakken en aan het begin meebakken.", "gdn", ""],
+   ["root", "eat", "If the roots are attached, pound them into curry pastes.", "Zitten de worteltjes eraan: fijnstampen in currypasta.", "kitchen", ""]],
+  ["pesto"]);
+
+P("basilicum", "Basilicum", "Basil", "herb", "basil",
+  [["stems", "eat", "Soft stems blend into pesto; woody lower stems can steep in sauces and come out before serving.", "Zachte stelen gaan mee in de pesto; houtige onderstelen laten meetrekken in sauzen en voor het opdienen eruit halen.", "kitchen", ""]],
+  ["pesto"]);
+
+P("dille", "Dille", "Dill", "herb", "dill",
+  [["stems", "eat", "Chop the stems finely into sauces, or add them to pickling jars.", "Hak de stelen fijn door sauzen, of doe ze bij het inmaken in de pot.", "kitchen", ""]],
+  ["pickle"]);
+
+P("munt", "Munt", "Mint", "herb", "verse munt mint",
+  [["stems", "flavour", "Steep the stems for tea.", "Zet thee van de stelen.", "kitchen", ""]],
+  ["tea"]);
+
+P("bieslook", "Bieslook", "Chives", "herb", "chives",
+  [["flowers", "eat", "Purple flowers, if any: scatter over salads.", "Paarse bloemetjes, als ze er zijn: over de salade strooien.", "kitchen", ""]],
+  []);
+
+P("rozemarijn", "Rozemarijn", "Rosemary", "herb", "rosemary",
+  [["stems", "flavour", "Woody stems go into stews or traybakes for flavour; take them out before eating. Or use them as skewers.", "Houtige stelen gaan mee in stoofschotels of ovenschotels voor de smaak; voor het eten eruit halen. Of gebruik ze als spiesjes.", "gdn", ""]],
+  []);
+
+P("tijm", "Tijm", "Thyme", "herb", "thyme",
+  [["stems", "flavour", "Add whole sprigs to stews and stock; fish out the stems before serving.", "Doe hele takjes in stoofschotels en bouillon; vis de steeltjes eruit voor het opdienen.", "gdn", ""]],
+  ["stock"]);
+
+P("salie", "Salie", "Sage", "herb", "sage",
+  [["stems", "flavour", "Steep stems in brown butter or stock, then remove.", "Laat de stelen trekken in bruine boter of bouillon en haal ze er dan uit.", "kitchen", ""]],
+  []);
+
+P("citroengras", "Citroengras", "Lemongrass", "herb", "sereh lemongrass",
+  [["outer", "flavour", "Bruise the tough outer layers and tops and steep them in tea, stock or curry; remove before eating.", "Kneus de taaie buitenlagen en toppen en laat ze trekken in thee, bouillon of curry; voor het eten eruit halen.", "kitchen", ""]],
+  ["tea", "stock"]);
+
+// Fruit.
+
+P("appel", "Appel", "Apple", "fruit", "appels elstar jonagold goudrenet apple apples",
+  [["skin", "eat", "No need to peel. Peels you do take off: dry them for tea (Heywood) or simmer them with cores for jelly.", "Schillen hoeft niet. Schillen die je toch weghaalt: drogen voor thee (Heywood) of met klokhuizen inkoken tot gelei.", "gdn heywood", ""],
+   ["core", "eat", "The core flesh is fine to eat. Leftover cores go into scrap vinegar (Bonneau).", "Het vruchtvlees rond het klokhuis is prima eetbaar. Overgebleven klokhuizen gaan in fruitazijn (Bonneau).", "bonneau kitchen", ""],
+   ["pips", "limit", "A few swallowed pips do no harm; don't chew through handfuls.", "Een paar doorgeslikte pitjes kunnen geen kwaad; kauw er geen handenvol kapot.", "vc", "pips"]],
+  ["tea", "vinegar"]);
+
+P("peer", "Peer", "Pear", "fruit", "peren conference doyenne pear pears",
+  [["skin", "eat", "Eat the skin. Peels you remove make a good tea, e.g. with herbs (Heywood).", "Eet de schil. Weggehaalde schillen geven goede thee, bijvoorbeeld met kruiden (Heywood).", "gdn heywood", ""],
+   ["core", "eat", "Eat around the pips, or put cores into scrap vinegar.", "Eet rond de pitjes, of doe klokhuizen in fruitazijn.", "bonneau kitchen", ""],
+   ["pips", "limit", "A few swallowed pips do no harm.", "Een paar doorgeslikte pitjes kunnen geen kwaad.", "vc", "pips"]],
+  ["tea", "vinegar"]);
+
+P("banaan", "Banaan", "Banana", "fruit", "bananen banana bananas",
+  [["skin", "cook", "Cook it: banana-skin chutney (Handling), or shred and fry the skin. Ripe, thin skins work best.", "Koken: chutney van bananenschil (Handling), of de schil fijnscheuren en bakken. Rijpe, dunne schillen werken het best.", "handling gdn", "pest"],
+   ["whole", "eat", "Brown, soft bananas: banana bread, pancakes, or freeze for smoothies.", "Bruine, zachte bananen: bananenbrood, pannenkoeken, of invriezen voor smoothies.", "kitchen", ""]],
+  ["jam"]);
+
+P("sinaasappel", "Sinaasappel", "Orange", "fruit", "sinaasappels handsinaasappel perssinaasappel orange oranges",
+  [["peel", "eat", "Zest it, candy it, make marmalade, or dry it for tea (Oddbox).", "Raspen, konfijten, marmelade maken, of drogen voor thee (Oddbox).", "oddbox kitchen", "citrus"],
+   ["pith", "eat", "Edible, just bitter.", "Eetbaar, alleen bitter.", "kitchen", ""],
+   ["pips", "limit", "A few pips do no harm (Voedingscentrum).", "Een paar pitjes kunnen geen kwaad (Voedingscentrum).", "vc", ""]],
+  ["candied", "tea"]);
+
+P("mandarijn", "Mandarijn", "Mandarin", "fruit", "mandarijnen clementine clementines satsuma mandarin",
+  [["peel", "eat", "Dry the peel: grind it for baking, or use it like Chinese dried tangerine peel in stews and tea.", "Droog de schil: malen voor gebak, of gebruiken als Chinese gedroogde mandarijnschil in stoofschotels en thee.", "kitchen", "citrus"]],
+  ["tea", "powder"]);
+
+P("citroen", "Citroen", "Lemon", "fruit", "citroenen lemon lemons",
+  [["peel", "eat", "Zest before you juice. Whole peel: preserved lemons or candied peel.", "Rasp eerst, pers daarna. Hele schil: ingemaakte citroenen of gekonfijte schil.", "kitchen", "citrus"],
+   ["halves", "flavour", "Squeezed halves: infuse in water, vinegar or a cleaning spray.", "Uitgeperste helften: laten trekken in water, azijn of een schoonmaakspray.", "kitchen", ""]],
+  ["candied"]);
+
+P("limoen", "Limoen", "Lime", "fruit", "limoenen lime limes",
+  [["peel", "eat", "Zest before juicing; freeze zest you don't need yet.", "Rasp vóór het persen; vries rasp in die je nog niet nodig hebt.", "kitchen", "citrus"]],
+  []);
+
+P("grapefruit", "Grapefruit", "Grapefruit", "fruit", "pompelmoes grapefruit",
+  [["peel", "eat", "Candy the peel or dry it for tea.", "Konfijt de schil of droog hem voor thee.", "kitchen", "citrus"]],
+  ["candied", "tea"]);
+
+P("kiwi", "Kiwi", "Kiwi", "fruit", "kiwi's kiwifruit gold kiwi",
+  [["skin", "eat", "Eat it. The fuzz takes getting used to; gold kiwis have smoother, thinner skins. Rub off loose hairs under the tap.", "Eet hem mee. Aan het pluis moet je wennen; gele kiwi's hebben een gladdere, dunnere schil. Wrijf losse haartjes weg onder de kraan.", "kcl gdn", "pest"]],
+  [], { fibre: { en: "Skin: 195% more fibre than the flesh.", nl: "Schil: 195% meer vezels dan het vruchtvlees." } });
+
+P("ananas", "Ananas", "Pineapple", "fruit", "pineapple",
+  [["core", "eat", "Blend the core into smoothies (Gill), or slice it thinly.", "Pureer de kern in smoothies (Gill), of snijd hem in dunne plakjes.", "bnf", ""],
+   ["skin", "flavour", "Scrub, then ferment into tepache or steep for tea (Oddbox). Not for chewing.", "Boenen, dan fermenteren tot tepache of laten trekken als thee (Oddbox). Niet om op te kauwen.", "gdn oddbox", "pest toxinpeel"],
+   ["crown", "no", "Compost the crown, or root it as a houseplant.", "De kroon naar de gft-bak, of laat hem wortelen als kamerplant.", "kitchen", ""]],
+  ["tepache", "tea"], { fibre: { en: "Skin and core: 454% more fibre than the flesh.", nl: "Schil en kern: 454% meer vezels dan het vruchtvlees." } });
+
+P("mango", "Mango", "Mango", "fruit", "mango's mango",
+  [["skin", "limit", "Some people eat it. It can cause an itchy rash in people sensitive to urushiol.", "Sommige mensen eten hem. Mensen die gevoelig zijn voor urushiol kunnen er jeukende uitslag van krijgen.", "kitchen", "urushiol pest"],
+   ["stone", "flavour", "The stone always carries fruit: simmer it (and the skin) with sugar and water for a coulis (Hunt), or ferment it into kvass or scrap vinegar (Bonneau).", "Aan de pit zit altijd vruchtvlees: met de schil, suiker en water laten trekken tot coulis (Hunt), of fermenteren tot kvas of fruitazijn (Bonneau).", "hunt bonneau", ""]],
+  ["vinegar"]);
+
+P("avocado", "Avocado", "Avocado", "fruit", "avocado's avocado",
+  [["skin", "no", "Not eaten.", "Wordt niet gegeten.", "vc", "toxinpeel pest"],
+   ["stone", "limit", "Oddbox suggests avocado-stone tea. No safety data either way.", "Oddbox noemt thee van avocadopit. Er zijn geen veiligheidsgegevens, positief of negatief.", "oddbox", "avopit"]],
+  []);
+
+P("druiven", "Druiven", "Grapes", "fruit", "druif grapes",
+  [["stems", "flavour", "Add the stems to scrap vinegar.", "Doe de steeltjes in fruitazijn.", "kitchen", ""],
+   ["seeds", "eat", "Grape seeds are fine to eat (Voedingscentrum).", "Druivenpitjes kun je gewoon eten (Voedingscentrum).", "vc", ""]],
+  ["vinegar"]);
+
+P("aardbei", "Aardbei", "Strawberry", "fruit", "aardbeien strawberry strawberries",
+  [["calyx", "eat", "The green tops are edible: leave them on in smoothies, or infuse them in water. Hulled cores go into scrap vinegar (Bonneau).", "De groene kroontjes zijn eetbaar: laat ze zitten in smoothies, of laat ze trekken in water. Uitgesneden kernen gaan in fruitazijn (Bonneau).", "bonneau kitchen", ""]],
+  ["vinegar"]);
+
+P("bessen", "Bessen", "Berries", "fruit", "frambozen bramen blauwe bessen rode bessen raspberries blackberries blueberries",
+  [["whole", "eat", "Soft or squashed berries: cook into compote or jam, or freeze for smoothies.", "Zachte of geplette bessen: compote of jam van maken, of invriezen voor smoothies.", "kitchen", ""],
+   ["stems", "eat", "Redcurrant stalks can stay on in jam if you sieve it.", "Steeltjes van rode bessen mogen mee in jam als je die zeeft.", "kitchen", ""]],
+  ["jam"]);
+
+P("kersen", "Kersen", "Cherries", "fruit", "kers cherries cherry",
+  [["stalk", "flavour", "Dry the stalks and steep them for tea, a traditional use.", "Droog de steeltjes en zet er thee van, een traditioneel gebruik.", "kitchen", ""],
+   ["stone", "limit", "Some cooks steep whole, uncracked stones in syrup or vinegar for an almond note. Don't crack them.", "Sommige koks laten hele, ongekraakte pitten trekken in siroop of azijn voor een amandeltoon. Niet kraken.", "bonneau kitchen", "kernel"]],
+  ["vinegar"]);
+
+P("pruim", "Pruim", "Plum", "fruit", "pruimen plum plums",
+  [["skin", "eat", "Eat the skin.", "Eet de schil.", "kitchen", ""],
+   ["stone", "limit", "Whole stones can go into scrap vinegar. Don't crack them.", "Hele pitten kunnen in fruitazijn. Niet kraken.", "bonneau", "kernel"]],
+  ["vinegar", "jam"]);
+
+P("perzik", "Perzik & nectarine", "Peach & nectarine", "fruit", "perziken nectarines peach nectarine",
+  [["skin", "eat", "Eat the skin. Peels left from blanching go into scrap vinegar or syrup.", "Eet de schil. Velletjes die na het blancheren overblijven gaan in fruitazijn of siroop.", "kitchen", ""],
+   ["stone", "limit", "Whole stones can steep in syrup or vinegar. Don't crack them.", "Hele pitten kunnen trekken in siroop of azijn. Niet kraken.", "bonneau", "kernel"]],
+  ["vinegar"]);
+
+P("abrikoos", "Abrikoos", "Apricot", "fruit", "abrikozen apricot apricots",
+  [["skin", "eat", "Eat the skin.", "Eet de schil.", "kitchen", ""],
+   ["kernel", "no", "Don't eat the kernel inside the stone, raw or ground. Bought 'apricot kernels' fall under the same advice.", "Eet het zaadje in de pit niet, rauw of gemalen. Gekochte 'abrikozenpitten' vallen onder hetzelfde advies.", "efsa vc", "kernel"]],
+  ["jam"]);
+
+P("watermeloen", "Watermeloen", "Watermelon", "fruit", "watermelon",
+  [["rind", "cook", "The inner white rind: pickle it, use it like cucumber in gazpacho, or slice and stir-fry it like courgette. The outer green skin is an acquired taste.", "De binnenste witte korst: inmaken, gebruiken als komkommer in gazpacho, of in reepjes roerbakken als courgette. De groene buitenschil is een verworven smaak.", "kcl gdn", "pest"],
+   ["seeds", "eat", "Roast the seeds.", "Rooster de pitten.", "gdn", ""]],
+  ["pickle", "seeds"], { fibre: { en: "Rind: 426% more fibre than the flesh (2.10 g per 100 g).", nl: "Korst: 426% meer vezels dan het vruchtvlees (2,10 g per 100 g)." } });
+
+P("meloen", "Meloen", "Melon", "fruit", "honingmeloen galia cantaloupe kanteloep charentais melon",
+  [["seeds", "eat", "Blend seeds and pulp with water and strain for a drink, or roast the seeds.", "Pureer zaadjes en pulp met water en zeef voor een drankje, of rooster de pitten.", "kitchen", ""],
+   ["rind", "cook", "Pickle the pale inner rind.", "Maak de lichte binnenkorst in.", "kitchen", "pest"]],
+  ["pickle", "seeds"]);
+
+P("granaatappel", "Granaatappel", "Pomegranate", "fruit", "granaatappels pomegranate",
+  [["seeds", "eat", "Eat the seeds whole, crunchy centre and all.", "Eet de pitjes heel, met knapperig binnenste en al.", "kitchen", ""],
+   ["pith", "no", "Very bitter, not harmful: compost it.", "Erg bitter, niet schadelijk: naar de gft-bak.", "kitchen", ""],
+   ["peel", "limit", "Dried peel is brewed as tea in some traditions. Strongly tannic; keep it occasional.", "Gedroogde schil wordt in sommige tradities als thee gezet. Sterk looizuurhoudend; houd het bij af en toe.", "kitchen", ""]],
+  []);
+
+P("passievrucht", "Passievrucht", "Passion fruit", "fruit", "passievruchten passion fruit maracuja",
+  [["seeds", "eat", "Eat the seeds with the pulp.", "Eet de pitjes mee met het vruchtvlees.", "kitchen", ""],
+   ["skin", "no", "Compost the skin.", "De schil gaat naar de gft-bak.", "vc", "toxinpeel"]],
+  []);
+
+P("vijg", "Vijg", "Fig", "fruit", "vijgen fig figs",
+  [["skin", "eat", "Eat it whole; no need to peel.", "Eet hem heel; schillen hoeft niet.", "gdn", ""],
+   ["leaves", "flavour", "Fig leaves (from a tree; rarely sold) can be infused for cordial or ice cream (Handling).", "Vijgenbladeren (van een boom; zelden te koop) kun je laten trekken voor siroop of ijs (Handling).", "handling", "figsap"]],
+  []);
+
+P("kaki", "Kaki", "Persimmon", "fruit", "sharonfruit sharon persimmon",
+  [["skin", "eat", "Eat the skin.", "Eet de schil.", "kitchen", ""],
+   ["calyx", "no", "Cut off only the leafy cap.", "Snijd alleen het bladkapje weg.", "kitchen", ""]],
+  []);
+
+P("papaja", "Papaja", "Papaya", "fruit", "papaya papaja",
+  [["seeds", "limit", "Peppery: some cooks dry and grind them as a pepper substitute. Use small amounts.", "Peperig: sommige koks drogen en malen ze als vervanging voor peper. Gebruik kleine hoeveelheden.", "kitchen", ""],
+   ["skin", "no", "Bitter and not eaten.", "Bitter en wordt niet gegeten.", "kitchen", ""]],
+  ["powder"]);
+
+P("lychee", "Lychee", "Lychee", "fruit", "lychees litchi lychee",
+  [["skin", "no", "Not eaten.", "Wordt niet gegeten.", "kitchen", ""],
+   ["stone", "no", "Don't eat the seed.", "Eet de pit niet.", "kitchen", "lychee"]],
+  []);
+
+</script>
+<script>
+(function () {
+  UI.en.caution = "Caution"; UI.nl.caution = "Let op";
+  UI.en.officialShort = "Official guidance"; UI.nl.officialShort = "Officieel advies";
+
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem("r2t-" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem("r2t-" + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  const navLang = (navigator.language || "en").toLowerCase().startsWith("nl") ? "nl" : "en";
+  const state = {
+    lang: store.get("lang", navLang),
+    organic: store.get("organic", false),
+    cat: "all", fam: null, q: "", sel: null, tab: "products"
+  };
+  const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+  const $ = id => document.getElementById(id);
+  const T = () => UI[state.lang];
+  const L = o => o[state.lang];
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  const name = p => p[state.lang];
+  const other = p => p[state.lang === "nl" ? "en" : "nl"];
+  const wide = () => window.matchMedia("(min-width: 861px)").matches;
+
+  PRODUCTS.forEach(p => {
+    p.hay = norm([p.id, p.nl, p.en, p.alias].join(" "));
+    p.fams = new Set(p.parts.map(x => PART[x.t].f));
+    p.anyWarn = p.w.length > 0 || p.parts.some(x => x.w.length);
+  });
+  // Technique → products that use it
+  const techUse = {};
+  PRODUCTS.forEach(p => p.tech.forEach(t => (techUse[t] = techUse[t] || []).push(p.id)));
+
+  function srcChip(k) {
+    const s = SOURCES[k];
+    const cls = SRC_CLASS[s.cls];
+    const label = `<i>${esc(L(cls))}</i> · ${esc(L(s))}`;
+    const title = esc(state.lang === "nl" ? s.fullnl : s.full);
+    return s.url
+      ? `<a class="src ${s.cls}" href="${s.url}" target="_blank" rel="noopener" title="${title}">${label}</a>`
+      : `<span class="src ${s.cls}" title="${title}">${label}</span>`;
+  }
+
+  function warnBlock(ids) {
+    if (!ids.length) return "";
+    const shown = [], folded = [];
+    ids.forEach(id => (state.organic && WARN[id].organic ? folded : shown).push(id));
+    let html = "";
+    if (shown.length) {
+      const official = shown.every(id => WARN[id].src.some(s => SOURCES[s].cls === "authority"));
+      html += `<div class="warnbox"><b>${official ? T().official : T().caution}</b>` +
+        shown.map(id => {
+          const w = WARN[id];
+          return `<p>${esc(L(w))}${w.verify ? ` <span class="verify">${T().verify}</span>` : ""}</p><div class="srcs">${w.src.map(srcChip).join("")}</div>`;
+        }).join("") + `</div>`;
+    }
+    if (folded.length) {
+      html += `<details class="folded"><summary>${T().organicFolded}</summary>` +
+        folded.map(id => `<p>${esc(L(WARN[id]))}</p>`).join("") + `</details>`;
+    }
+    return html;
+  }
+
+  /* ---------- header, tabs ---------- */
+  function renderChrome() {
+    document.documentElement.lang = state.lang;
+    const t = T();
+    const words = t.title.split(" ");
+    $("title").innerHTML = esc(words.slice(0, -1).join(" ")) + " <span>" + esc(words.slice(-1)[0]) + "</span>";
+    $("tagline").textContent = t.tagline;
+    $("organicLabel").textContent = t.organic;
+    $("organic").checked = state.organic;
+    ["nl", "en"].forEach(l => $("lang-" + l).setAttribute("aria-pressed", String(state.lang === l)));
+    $("tabs").innerHTML = [["products", t.tabProducts], ["techniques", t.tabTech], ["about", t.tabAbout]]
+      .map(([k, v]) => `<a href="#${k}" ${state.tab === k ? 'aria-current="page"' : ""}>${esc(v)}</a>`).join("");
+    $("q").placeholder = t.search;
+    $("q").setAttribute("aria-label", t.search);
+    $("partsLabel").textContent = t.parts;
+    $("cats").innerHTML = [["all", t.all]].concat(Object.entries(CATS).map(([k, v]) => [k, L(v)]))
+      .map(([k, v]) => `<button type="button" class="chip" data-cat="${k}" aria-pressed="${state.cat === k}">${esc(v)}</button>`).join("");
+    $("fams").innerHTML = Object.entries(FAMILY)
+      .map(([k, v]) => `<button type="button" class="chip" data-fam="${k}" aria-pressed="${state.fam === k}">${esc(L(v))}</button>`).join("");
+    ["products", "techniques", "about"].forEach(k => $("v-" + k).hidden = state.tab !== k);
+  }
+
+  /* ---------- product list ---------- */
+  function filtered() {
+    const q = norm(state.q.trim());
+    return PRODUCTS.filter(p =>
+      (state.cat === "all" || p.cat === state.cat) &&
+      (!state.fam || p.fams.has(state.fam)) &&
+      (!q || q.split(/\s+/).every(w => p.hay.includes(w)))
+    ).sort((a, b) => name(a).localeCompare(name(b), state.lang));
+  }
+
+  function renderList() {
+    const list = filtered();
+    $("count").textContent = list.length ? T().results(list.length) : T().none;
+    $("plist").innerHTML = list.map(p => {
+      const minis = p.parts.map(x => `<span class="mini s-${x.s}" title="${esc(L(STATUS[x.s]))}">${esc(L(PART[x.t]))}</span>`).join("");
+      const flags = (p.fibre ? `<span class="flag fibre" title="${T().fibre}">${state.lang === "nl" ? "vezels" : "fibre"}</span>` : "") +
+        (p.anyWarn ? `<span class="flag warn" title="${T().caution}">!</span>` : "");
+      return `<li><button type="button" data-id="${p.id}" ${state.sel === p.id ? 'aria-current="true"' : ""}>
+        <span class="pname"><strong>${esc(name(p))}</strong>${other(p) !== name(p) ? `<small>${esc(other(p))}</small>` : ""}<span class="flags">${flags}</span></span>
+        <span class="minis">${minis}</span></button></li>`;
+    }).join("");
+  }
+
+  /* ---------- product detail ---------- */
+  function renderDetail() {
+    const d = $("detail");
+    const p = byId[state.sel];
+    document.querySelector(".split").classList.toggle("showdetail", !!p);
+    if (!p) { d.innerHTML = ""; return; }
+    const t = T();
+    const fibre = p.fibre ? `<div class="fibrebox${p.neg ? " neg" : ""}"><b>${t.fibre}</b>${esc(L(p.fibre))}<div class="srcs" style="margin-top:6px">${srcChip("kcl")}</div></div>` : "";
+    const pw = p.w.length ? `<div><div class="sect-label">${t.productWarn}</div>${warnBlock(p.w)}</div>` : "";
+    const parts = p.parts.map(x => `<article class="part">
+        <div class="part-h"><h3>${esc(L(PART[x.t]))}</h3><span class="pill s-${x.s}">${esc(L(STATUS[x.s]))}</span></div>
+        <p>${esc(x[state.lang])}</p>
+        <div class="srcs">${x.src.map(srcChip).join("")}</div>
+        ${warnBlock(x.w)}
+      </article>`).join("");
+    const tech = p.tech.length ? `<div><div class="sect-label">${t.techniques}</div><div class="techlinks">${p.tech.map(k => `<a href="#t-${k}">${esc(TECH[k][state.lang].t)}</a>`).join("")}</div></div>` : "";
+    d.innerHTML = `<div class="inner">
+      <button type="button" class="backbtn" id="back">← ${t.back}</button>
+      <div class="dhead"><h2>${esc(name(p))}</h2><p>${other(p) !== name(p) ? esc(other(p)) + " · " : ""}${esc(L(CATS[p.cat]))}</p></div>
+      ${fibre}${pw}
+      <div class="parts">${parts}</div>
+      ${tech}
+      <p class="orgnote">${state.organic ? t.organicOn : t.organicOff}</p>
+    </div>`;
+    d.scrollTop = 0;
+  }
+
+  /* ---------- techniques ---------- */
+  function renderTech() {
+    const t = T();
+    const cards = Object.entries(TECH).map(([k, v]) => {
+      const c = v[state.lang];
+      const used = (techUse[k] || []).map(id => byId[id]).sort((a, b) => name(a).localeCompare(name(b), state.lang))
+        .map(p => `<a href="#${p.id}">${esc(name(p))}</a>`).join(", ");
+      return `<article class="tcard" id="t-${k}"><h3>${esc(c.t)}</h3>
+        <ol>${c.s.map(s => `<li>${esc(s)}</li>`).join("")}</ol>
+        ${v.warn ? warnBlock(v.warn) : ""}
+        <div class="srcs">${v.src.map(srcChip).join("")}</div>
+        ${used ? `<div class="used">${t.usedFor}: ${used}</div>` : ""}</article>`;
+    }).join("");
+    $("v-techniques").innerHTML = `<div class="inner"><h2>${t.tabTech}</h2>${cards}</div>`;
+  }
+
+  /* ---------- about ---------- */
+  function renderAbout() {
+    const nl = state.lang === "nl";
+    const legend = Object.entries(STATUS).map(([k, s]) => `<div><span class="pill s-${k}">${esc(L(s))}</span><span>${esc(nl ? s.dnl : s.den)}</span></div>`).join("");
+    const ev = nl ? [
+      ["measured", "Gemeten in het lab (alleen de 12 producten uit de King's College-studie, rauw)."],
+      ["authority", "Een officiële instantie (EFSA, RIVM, Voedingscentrum, British Nutrition Foundation)."],
+      ["chef", "Een met naam genoemde kok of schrijver uit het Guardian-artikel."],
+      ["kitchen", "Gangbare keukenpraktijk, door Claude verzameld. Niet per regel onderbouwd."]
+    ] : [
+      ["measured", "Measured in a lab (only the 12 products in the King's College study, raw)."],
+      ["authority", "An official body (EFSA, RIVM, Voedingscentrum, British Nutrition Foundation)."],
+      ["chef", "A named chef or writer quoted in the Guardian article."],
+      ["kitchen", "General kitchen practice compiled by Claude. Not sourced line by line."]
+    ];
+    const evHtml = ev.map(([k, d]) => `<div><span class="src ${k}"><i>${esc(L(SRC_CLASS[k]))}</i></span><span>${esc(d)}</span></div>`).join("");
+    const verifyList = Object.entries(WARN).filter(([, w]) => w.verify)
+      .map(([, w]) => `<li>${esc(L(w))}</li>`).join("");
+    const srcRows = Object.values(SOURCES).map(s => `<tr><td>${s.url ? `<a href="${s.url}" target="_blank" rel="noopener">${esc(L(s))}</a>` : esc(L(s))}</td><td>${esc(L(SRC_CLASS[s.cls]))}</td><td>${esc(nl ? s.fullnl : s.full)}</td></tr>`).join("");
+    $("v-about").innerHTML = `<div class="inner prose">
+      <h2>${T().tabAbout}</h2>
+      ${nl ? `<p>Per groente, fruit of kruid zie je welke delen meestal worden weggegooid, of je ze kunt eten, hoe, en wat officiële instanties erover zeggen. ${PRODUCTS.length} gangbare producten uit Nederlandse winkels en markten. Geïnspireerd door het A–Z-artikel in The Guardian van 17 november 2026.</p>
+      <p>Wat koks doen en wat instanties adviseren, staat naast elkaar. Waar die botsen (kiwischil, aardappelschil) zie je beide en beslis je zelf.</p>`
+      : `<p>For each fruit, vegetable or herb you'll see which parts usually get thrown away, whether you can eat them, how, and what official bodies say. ${PRODUCTS.length} common products from Dutch shops and markets. Inspired by The Guardian's A–Z of 17 November 2026.</p>
+      <p>What chefs do and what the authorities advise sit side by side. Where they clash (kiwi skin, potato skin) you see both and decide.</p>`}
+      <h3>${nl ? "Statussen" : "Statuses"}</h3><div class="legend">${legend}</div>
+      <h3>${nl ? "Onderbouwing" : "Evidence"}</h3><div class="legend">${evHtml}</div>
+      <h3>${nl ? "De schakelaar 'biologisch'" : "The organic switch"}</h3>
+      <p>${nl ? "Aan: waarschuwingen over resten van bestrijdingsmiddelen en naoogstbehandeling van citrus worden ingeklapt. Waarschuwingen over natuurlijke gifstoffen (aardappel, rabarberblad, pitten) blijven altijd staan; die gelden ook voor biologisch." : "On: warnings about pesticide residues and post-harvest treatment of citrus fold away. Warnings about natural plant toxins (potato, rhubarb leaves, kernels) always stay; they apply to organic produce too."}</p>
+      <h3>${nl ? "Grenzen van deze versie" : "Limits of this version"}</h3>
+      <ul>
+        <li>${nl ? "Vezelcijfers bestaan alleen voor de 12 producten uit de King's College-studie, gemeten in rauwe producten. Voor de rest zijn er geen cijfers en die worden ook niet verzonnen." : "Fibre figures exist only for the 12 products in the King's College study, measured raw. Everything else has no figures, and none are invented."}</li>
+        <li>${nl ? "De meeste 'zo gebruik je het'-regels zijn gangbare keukenpraktijk die ik (Claude) heb samengesteld, niet per regel aan een bron gekoppeld." : "Most 'how to use it' lines are general kitchen practice compiled by me (Claude), not tied to a source line by line."}</li>
+        <li>${nl ? "Dit is geen medisch advies. Ben je zwanger, kook je voor jonge kinderen of heb je bijvoorbeeld aanleg voor nierstenen, kijk dan bij het Voedingscentrum of je arts." : "This is not medical advice. If you're pregnant, cooking for small children, or prone to kidney stones, for example, check the Voedingscentrum or your doctor."}</li>
+      </ul>
+      <h3>${nl ? "Nog te controleren" : "Still to verify"}</h3>
+      <p>${nl ? "Deze waarschuwingen heb ik niet tegen de oorspronkelijke bron kunnen controleren. Ze staan in de tool met het label" : "I couldn't check these warnings against the primary source. They carry the label"} <span class="verify">${T().verify}</span>.</p>
+      <ul>${verifyList}</ul>
+      <h3>${nl ? "Bronnen" : "Sources"}</h3>
+      <div class="tablewrap"><table class="src-t"><thead><tr><th>${nl ? "Bron" : "Source"}</th><th>${nl ? "Soort" : "Type"}</th><th>${nl ? "Toelichting" : "Notes"}</th></tr></thead><tbody>${srcRows}</tbody></table></div>
+      <p class="orgnote">${nl ? "Versie 1, 17 november 2026." : "Version 1, 17 November 2026."}</p>
+    </div>`;
+  }
+
+  function renderAll() { renderChrome(); renderList(); renderDetail(); renderTech(); renderAbout(); }
+
+  /* ---------- routing ---------- */
+  function route() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "techniques" || h.startsWith("t-")) state.tab = "techniques";
+    else if (h === "about") state.tab = "about";
+    else {
+      state.tab = "products";
+      if (byId[h]) state.sel = h;
+      else if (h === "products" || h === "") state.sel = wide() ? (state.sel || filtered()[0].id) : null;
+    }
+    renderChrome(); renderList(); renderDetail();
+    if (h.startsWith("t-")) { const el = $(h); if (el) el.scrollIntoView(); }
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener("click", e => {
+    const b = e.target.closest("button");
+    if (!b) return;
+    if (b.dataset.lang) { state.lang = b.dataset.lang; store.set("lang", state.lang); renderAll(); }
+    else if (b.dataset.cat) { state.cat = b.dataset.cat; renderChrome(); renderList(); }
+    else if (b.dataset.fam) { state.fam = state.fam === b.dataset.fam ? null : b.dataset.fam; renderChrome(); renderList(); }
+    else if (b.dataset.id) { if (location.hash.slice(1) === b.dataset.id) route(); else location.hash = b.dataset.id; }
+    else if (b.id === "back") { state.sel = null; location.hash = "products"; }
+  });
+  $("q").addEventListener("input", e => { state.q = e.target.value; renderList(); });
+  $("organic").addEventListener("change", e => { state.organic = e.target.checked; store.set("organic", state.organic); renderDetail(); renderTech(); });
+  window.addEventListener("hashchange", route);
+
+  renderAll();
+  route();
+})();
+
+// Offline support: register the service worker (installable app).
+if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+
+</script>
+</body>
+</html>
